@@ -2,9 +2,9 @@ export const APP_LINK = {
   HOME: "/",
   TICKETS: "/tickets",
   MERCHANDISE: "/merchandise",
-  SIGN: {
-    IN: "/sign/in",
-    UP: "/sign/up",
+  AUTH: {
+    LOGIN: "/auth/login",
+    REGISTER: "/auth/register",
   },
   REGISTER: "/register",
   DASHBOARD: "/dashboard",

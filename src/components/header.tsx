@@ -1,116 +1,113 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Search,
-  ShoppingCart,
-  X,
-  Menu,
-  User,
-  LogIn,
-  UserPlus,
-} from "lucide-react";
-import { APP_LINK } from "@/contants/link_constant";
+import { useEffect, useState } from "react";
+import { APP_LINK } from "@/constants/link_constant";
 import Link from "next/link";
-import { Input } from "./ui/input";
 import { Button, buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
+import SearchBar from "./search-bar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Box, Container, Flex } from "@radix-ui/themes";
+import { getCookie } from "cookies-next";
+import { TOKEN_SETTING } from "@/constants";
+import { LayoutDashboard, LogOut, User } from "lucide-react";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const navItems = [
-    { id: "home", label: "Home" },
-    { id: "tickets", label: "Tickets" },
-    { id: "merchandise", label: "Merchandise" },
-    { id: "dashboard", label: "Dashboard" },
-  ];
+  useEffect(() => {
+    if (getCookie(TOKEN_SETTING.TOKEN)) {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-10">
-          {/* Logo */}
-          <div className="flex items-center">
-            <div className="text-2xl font-bold text-red-800">
-              Event<span className="text-yellow-600">Hub</span>
-            </div>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8 w-full">
-            <Input
-              placeholder="Search..."
-              className="border border-gray-300 rounded-full max-w-2xl w-full"
-            />
+    <header className="bg-white py-4 px-4 md:px-6 lg:px-8 shadow-xs sticky top-0 z-10">
+      <Container>
+        <Flex
+          direction={{ initial: "column", md: "row" }}
+          align={"center"}
+          justify={"between"}
+          gap={"4"}
+          className="mx-auto"
+        >
+          <Flex align={"center"}>
             <Link
-              href={APP_LINK.MERCHANDISE}
-              className={`px-3 py-2 text-sm font-medium transition-colors duration-200 text-gray-700 hover:text-red-800`}
+              href={APP_LINK.HOME}
+              className="text-3xl font-serif font-bold text-rose-600 hover:text-rose-700 transition-colors duration-300"
             >
-              Merchandise
+              Vowmate
             </Link>
-          </nav>
+          </Flex>
 
-          {/* Right side icons */}
-          <div className="flex items-center space-x-4">
-            <Link
-              href={APP_LINK.SIGN.IN}
-              className={buttonVariants({ variant: "primary" })}
-            >
-              <LogIn /> Login
-            </Link>
-            <Link
-              href={APP_LINK.SIGN.UP}
-              className={buttonVariants({ variant: "secondary" })}
-            >
-              <UserPlus /> Register
-            </Link>
-            {/* <button className="p-2 text-gray-700 hover:text-red-800 transition-colors">
-              <Search className="h-5 w-5" />
-            </button>
-            <button className="p-2 text-gray-700 hover:text-red-800 transition-colors relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-red-800 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                10
-              </span>
-            </button>
-            <button className="p-2 text-gray-700 hover:text-red-800 transition-colors">
-              <User className="h-5 w-5" />
-            </button> */}
+          <Box className="w-full md:w-auto flex-1 max-w-xl">
+            <SearchBar placeholder="Cari vendor pernikahan..." />
+          </Box>
 
-            {/* Mobile menu button */}
-            <button
-              className="md:hidden p-2 text-gray-700 hover:text-red-800 transition-colors"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-3 border-t border-gray-200">
-            <nav className="flex flex-col space-y-2">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                  }}
-                  className={`px-3 py-2 text-left text-sm font-medium transition-colors duration-200 text-gray-700 hover:text-red-800 hover:bg-gray-50`}
+          <Flex align={"center"} gap={"4"}>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  className={buttonVariants({ variant: "ghost" })}
                 >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          </div>
-        )}
-      </div>
+                  <Flex gap="2" align={"center"}>
+                    <img
+                      src="https://images.unsplash.com/photo-1605379399642-870262d3d051?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
+                      alt="Asep Saepullah"
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <div className="text-sm font-medium text-gray-700">
+                      Halo, Asep Saepullah
+                    </div>
+                  </Flex>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard">
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/profile">
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/profile">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <div className="text-sm font-medium text-gray-700">
+                  Are you event organizer?
+                </div>
+                <Link
+                  href={APP_LINK.AUTH.LOGIN}
+                  className={buttonVariants({ variant: "primary" })}
+                >
+                  Login
+                </Link>
+                <Link
+                  href={APP_LINK.AUTH.REGISTER}
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  Register
+                </Link>
+              </>
+            )}
+          </Flex>
+        </Flex>
+      </Container>
     </header>
   );
 }
