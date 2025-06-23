@@ -23,7 +23,6 @@ export async function serverFetcher<T = any>(
   const finalHeaders: Record<string, string> = {
     ...(headers || {}),
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
   if (params) {
@@ -32,9 +31,10 @@ export async function serverFetcher<T = any>(
 
   const axiosConfig: AxiosRequestConfig = {
     method,
-    url: `${process.env.NEXT_PUBLIC_APP_LINK}/rest/${url}`,
+    url: `${process.env.NEXT_PUBLIC_APP_LINK}/api/${url}`,
     headers: finalHeaders,
     data: body,
+    withCredentials: true,
   };
 
   try {

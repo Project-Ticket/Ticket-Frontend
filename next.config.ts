@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     let rewrites = [
       {
-        source: "/rest/:path*",
+        source: "/api/:path*",
         destination: `${process.env.NEXT_PUBLIC_API_LINK}:path*`,
       },
     ];

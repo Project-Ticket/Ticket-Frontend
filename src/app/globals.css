@@ -120,3 +120,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+:where(.rt-Container.rt-r-size-4) .rt-ContainerInner {
+  @apply !max-w-7xl;
+}

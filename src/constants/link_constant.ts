@@ -8,4 +8,9 @@ export const APP_LINK = {
   },
   REGISTER: "/register",
   DASHBOARD: "/dashboard",
+  VENDOR: {
+    DEFAULT: "/vendor",
+    REGISTER: "/vendor/register",
+    REQUESTS: "/vendor/requests",
+  },
 };

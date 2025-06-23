@@ -28,10 +28,18 @@ export const handleLogin = async (formData: FormData) => {
       body: formData,
     });
 
-    cookieStore.set(TOKEN_SETTING.TOKEN, response.data.token);
+    cookieStore.set(TOKEN_SETTING.TOKEN, response.data.token, {
+      httpOnly: true,
+    });
 
     return showMessageSuccess(response.message);
   } catch (error: any) {
     return showMessageError(error);
   }
+};
+
+export const handleLogout = async () => {
+  const cookieStore = await cookies();
+
+  cookieStore.delete(TOKEN_SETTING.TOKEN);
 };

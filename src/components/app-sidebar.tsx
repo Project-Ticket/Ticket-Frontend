@@ -3,11 +3,13 @@
 import * as React from "react";
 import {
   AudioWaveform,
+  BadgeDollarSign,
   BookOpen,
   Bot,
   CalendarDays,
   ChartColumnBig,
   Command,
+  DollarSign,
   Frame,
   GalleryVerticalEnd,
   GitBranch,
@@ -39,19 +41,24 @@ const navMain = [
         isActive: true,
       },
       {
-        title: "My Organizer",
+        title: "Organizer",
         url: APP_LINK.DASHBOARD,
         icon: GitBranch,
       },
       {
-        title: "My Events",
+        title: "Events",
         url: APP_LINK.DASHBOARD,
         icon: CalendarDays,
       },
       {
-        title: "My Merchandise",
+        title: "Merchandise",
         url: APP_LINK.DASHBOARD,
         icon: ShoppingBag,
+      },
+      {
+        title: "Transactions",
+        url: APP_LINK.DASHBOARD,
+        icon: BadgeDollarSign,
       },
     ],
   },

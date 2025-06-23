@@ -29,10 +29,10 @@ export default function RegisterPage() {
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      password_confirmation: "",
+      name: "Asep Saepullah",
+      email: "asep.saepullah@mailinator.com",
+      password: "password",
+      password_confirmation: "password",
     },
   });
 

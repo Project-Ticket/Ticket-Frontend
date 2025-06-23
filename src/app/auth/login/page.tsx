@@ -26,19 +26,22 @@ export default function LoginPage() {
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "user@mailinator.com",
+      password: "password",
     },
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: LoginSchema) => {
     setIsLoading(true);
+
     const formData = new FormData();
     formData.append("email", data.email);
     formData.append("password", data.password);
+
     try {
       const response = await handleLogin(formData);
+      console.log(response);
 
       if (response.success?.status) {
         form.reset();
