@@ -7,7 +7,15 @@ export const APP_LINK = {
     REGISTER: "/auth/register",
   },
   REGISTER: "/register",
-  DASHBOARD: "/dashboard",
+  DASHBOARD: {
+    DEFAULT: "/dashboard",
+    ORGANIZER: {
+      DEFAULT: "/dashboard/organizer",
+      ADDRESS: "/dashboard/organizer/address",
+      PORTFOLIO: "/dashboard/organizer/portfolio",
+      DOCUMENT: "/dashboard/organizer/document",
+    },
+  },
   VENDOR: {
     DEFAULT: "/vendor",
     REGISTER: "/vendor/register",

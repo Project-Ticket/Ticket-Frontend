@@ -16,7 +16,12 @@ const nextConfig: NextConfig = {
   },
 
   images: {
-    domains: ["ui-avatars.com", "images.pexels.com", "10.255.10.219"],
+    domains: [
+      "ui-avatars.com",
+      "images.pexels.com",
+      "10.255.10.219",
+      "10.255.10.154",
+    ],
   },
 
   async rewrites() {
@@ -24,6 +29,10 @@ const nextConfig: NextConfig = {
       {
         source: "/api/:path*",
         destination: `${process.env.NEXT_PUBLIC_API_LINK}:path*`,
+      },
+      {
+        source: "/storage/:path*",
+        destination: `${process.env.NEXT_PUBLIC_STORAGE_LINK}:path*`,
       },
     ];
 

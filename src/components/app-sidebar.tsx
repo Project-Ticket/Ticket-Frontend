@@ -36,28 +36,28 @@ const navMain = [
     items: [
       {
         title: "Dashboard",
-        url: APP_LINK.DASHBOARD,
+        url: APP_LINK.DASHBOARD.DEFAULT,
         icon: ChartColumnBig,
         isActive: true,
       },
       {
         title: "Organizer",
-        url: APP_LINK.DASHBOARD,
+        url: APP_LINK.DASHBOARD.ORGANIZER,
         icon: GitBranch,
       },
       {
         title: "Events",
-        url: APP_LINK.DASHBOARD,
+        url: APP_LINK.DASHBOARD.DEFAULT,
         icon: CalendarDays,
       },
       {
         title: "Merchandise",
-        url: APP_LINK.DASHBOARD,
+        url: APP_LINK.DASHBOARD.DEFAULT,
         icon: ShoppingBag,
       },
       {
         title: "Transactions",
-        url: APP_LINK.DASHBOARD,
+        url: APP_LINK.DASHBOARD.DEFAULT,
         icon: BadgeDollarSign,
       },
     ],

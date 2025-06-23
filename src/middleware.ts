@@ -24,12 +24,15 @@ export async function middleware(request: NextRequest) {
   if (isGuestRoute && haveAnAccess) {
     console.log("redirect to dashboard");
 
-    return NextResponse.redirect(new URL(APP_LINK.DASHBOARD, request.url));
+    return NextResponse.redirect(
+      new URL(APP_LINK.DASHBOARD.DEFAULT, request.url)
+    );
   }
 
-  const isProtectedRoute = [APP_LINK.DASHBOARD, APP_LINK.VENDOR.REGISTER].some(
-    (route) => pathname.startsWith(route)
-  );
+  const isProtectedRoute = [
+    APP_LINK.DASHBOARD.DEFAULT,
+    APP_LINK.VENDOR.REGISTER,
+  ].some((route) => pathname.startsWith(route));
 
   if (isProtectedRoute && !haveAnAccess) {
     console.log("redirect to login");
@@ -68,12 +71,12 @@ export async function middleware(request: NextRequest) {
             response.data.data.user.verification_status_organizer === APPROVED
           ) {
             return NextResponse.redirect(
-              new URL(APP_LINK.DASHBOARD, request.url)
+              new URL(APP_LINK.DASHBOARD.DEFAULT, request.url)
             );
           }
         }
 
-        if (pathname === APP_LINK.DASHBOARD) {
+        if (pathname === APP_LINK.DASHBOARD.DEFAULT) {
           if (
             [PENDING, REJECTED].includes(
               response.data.data.user.verification_status_organizer

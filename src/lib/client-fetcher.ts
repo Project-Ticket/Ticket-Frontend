@@ -44,3 +44,7 @@ export async function apiFetch<T = any>(
     throw error;
   }
 }
+
+export function imageFetch(url: string) {
+  return `${process.env.NEXT_PUBLIC_APP_LINK}/storage/${url}`;
+}

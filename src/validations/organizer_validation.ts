@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const createOrganizer = z.object({
   organizer_name: z.string().min(3).max(150),
-  description: z.string().min(3).max(150),
+  description: z.string().min(3).max(300),
   logo: z
     .instanceof(File, { message: "Input type is image" })
     .refine(
@@ -35,7 +35,7 @@ export const createOrganizer = z.object({
 
 export const createProfileOrganizer = z.object({
   organizer_name: z.string().min(3).max(150),
-  description: z.string().min(3).max(150),
+  description: z.string().min(3).max(300),
   logo: z
     .instanceof(File, { message: "Input type is image" })
     .refine(
@@ -102,9 +102,33 @@ export const createDocumentOrganizer = z
     }
   );
 
+export const updateProfileOrganizer = z.object({
+  organizer_name: z.string().min(3).max(150),
+  description: z.string().min(3).max(300),
+  logo: z
+    .instanceof(File, { message: "Input type is image" })
+    .refine(
+      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
+      { message: "Invalid image file type" }
+    )
+    .optional(),
+  banner: z
+    .instanceof(File, { message: "Input type is image" })
+    .refine(
+      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
+      { message: "Invalid image file type" }
+    )
+    .optional(),
+  contact_person: z.string().min(3).max(150),
+  contact_phone: z.string().min(3).max(150),
+  contact_email: z.string().min(3).max(150),
+});
+
 export type CreateOrganizer = z.infer<typeof createOrganizer>;
 export type CreateProfileOrganizer = z.infer<typeof createProfileOrganizer>;
 export type CreateAddressOrganizer = z.infer<typeof createAddressOrganizer>;
 export type CreatePortfolioOrganizer = z.infer<typeof createPortfolioOrganizer>;
 export type CreateBankOrganizer = z.infer<typeof createBankOrganizer>;
 export type CreateDocumentOrganizer = z.infer<typeof createDocumentOrganizer>;
+
+export type UpdateProfileOrganizer = z.infer<typeof updateProfileOrganizer>;

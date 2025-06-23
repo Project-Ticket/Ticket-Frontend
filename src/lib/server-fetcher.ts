@@ -23,6 +23,7 @@ export async function serverFetcher<T = any>(
   const finalHeaders: Record<string, string> = {
     ...(headers || {}),
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
   if (params) {
