@@ -17,8 +17,8 @@ import { OrganizerInterface, UserInterface } from "@/interfaces";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { toTitleCase } from "@/lib/utils";
 import {
-  createAddressOrganizer,
-  CreateAddressOrganizer,
+  createPortfolioOrganizer,
+  CreatePortfolioOrganizer,
 } from "@/validations/organizer_validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Grid } from "@radix-ui/themes";
@@ -29,13 +29,13 @@ import { useForm } from "react-hook-form";
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [organizer, setOrganizer] = useState<OrganizerInterface>();
-  const form = useForm<CreateAddressOrganizer>({
-    resolver: zodResolver(createAddressOrganizer),
+  const form = useForm<CreatePortfolioOrganizer>({
+    resolver: zodResolver(createPortfolioOrganizer),
     defaultValues: {
-      address: "",
-      city: "",
-      postal_code: "",
-      province: "",
+      facebook: "",
+      instagram: "",
+      twitter: "",
+      website: "",
     },
   });
 
@@ -46,10 +46,10 @@ export default function Page() {
       const user = (await handleGetProfile()) as UserInterface;
       const organizer = user.event_organizer!;
 
-      form.setValue("postal_code", organizer.postal_code);
-      form.setValue("address", organizer.address);
-      form.setValue("city", organizer.city);
-      form.setValue("province", organizer.province);
+      form.setValue("facebook", organizer.facebook);
+      form.setValue("instagram", organizer.instagram);
+      form.setValue("twitter", organizer.twitter);
+      form.setValue("website", organizer.website);
 
       setOrganizer(organizer);
     } catch (error) {
@@ -58,14 +58,14 @@ export default function Page() {
     }
   };
 
-  const onSubmit = async (data: CreateAddressOrganizer) => {
+  const onSubmit = async (data: CreatePortfolioOrganizer) => {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("province", data?.province || "");
-    formData.append("city", data?.city || "");
-    formData.append("postal_code", data?.postal_code || "");
-    formData.append("address", data?.address || "");
+    formData.append("facebook", data?.facebook || "");
+    formData.append("instagram", data?.instagram || "");
+    formData.append("twitter", data?.twitter || "");
+    formData.append("website", data?.website || "");
 
     try {
       const response = await handleUpdate(formData, organizer?.uuid!);
@@ -78,7 +78,7 @@ export default function Page() {
       if (response.error) {
         if (response.error.data) {
           Object.entries(response.error.data).forEach(([key, messages]) => {
-            form.setError(key as keyof CreateAddressOrganizer, {
+            form.setError(key as keyof CreatePortfolioOrganizer, {
               type: "server",
               message: (messages as string[])[0],
             });
@@ -109,7 +109,7 @@ export default function Page() {
             <Grid columns={{ initial: "1", md: "2" }} gap={"5"}>
               <FormField
                 control={form.control}
-                name="province"
+                name="facebook"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{toTitleCase(field.name)}</FormLabel>
@@ -122,7 +122,7 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="city"
+                name="instagram"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{toTitleCase(field.name)}</FormLabel>
@@ -135,7 +135,7 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="postal_code"
+                name="twitter"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{toTitleCase(field.name)}</FormLabel>
@@ -148,9 +148,9 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="address"
+                name="website"
                 render={({ field }) => (
-                  <FormItem className="col-span-2">
+                  <FormItem>
                     <FormLabel>{toTitleCase(field.name)}</FormLabel>
                     <FormControl>
                       <Input {...field} disabled={isLoading} />

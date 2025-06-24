@@ -50,7 +50,7 @@ export default function DashboardOrganizerLayout({
       />
 
       <Tabs defaultValue={currentTab}>
-        <TabsList>
+        <TabsList className="mb-3">
           {menuItems.map((item, i) => (
             <TabsTrigger value={item.path} key={i} asChild>
               <Link href={item.path}>

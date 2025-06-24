@@ -42,7 +42,7 @@ const navMain = [
       },
       {
         title: "Organizer",
-        url: APP_LINK.DASHBOARD.ORGANIZER,
+        url: APP_LINK.DASHBOARD.ORGANIZER.DEFAULT,
         icon: GitBranch,
       },
       {

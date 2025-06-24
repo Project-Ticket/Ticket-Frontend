@@ -40,8 +40,8 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
+    formData.append("name", data.name!);
+    formData.append("email", data.email!);
     formData.append("password", data.password);
     formData.append("password_confirmation", data.password_confirmation);
 
@@ -55,9 +55,17 @@ export default function RegisterPage() {
       }
 
       if (response.error) {
+        if (response.error.data) {
+          Object.entries(response.error.data).forEach(([key, messages]) => {
+            form.setError(key as keyof RegisterSchema, {
+              type: "server",
+              message: (messages as string[])[0],
+            });
+          });
+        }
         toastError(response.error.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       toastError(error);
     } finally {
       setIsLoading(false);

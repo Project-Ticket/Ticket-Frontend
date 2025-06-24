@@ -41,7 +41,6 @@ export default function LoginPage() {
 
     try {
       const response = await handleLogin(formData);
-      console.log(response);
 
       if (response.success?.status) {
         form.reset();
@@ -50,6 +49,14 @@ export default function LoginPage() {
       }
 
       if (response.error) {
+        if (response.error.data) {
+          Object.entries(response.error.data).forEach(([key, messages]) => {
+            form.setError(key as keyof LoginSchema, {
+              type: "server",
+              message: (messages as string[])[0],
+            });
+          });
+        }
         toastError(response.error.message);
       }
     } catch (error) {

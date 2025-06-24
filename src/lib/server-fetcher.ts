@@ -1,6 +1,7 @@
 import { TOKEN_SETTING } from "@/constants";
 import { cookies } from "next/headers";
 import axios, { AxiosRequestConfig, Method } from "axios";
+import { createLogger } from "./logger";
 
 type FetchOptions = {
   method?: Method;
@@ -39,12 +40,33 @@ export async function serverFetcher<T = any>(
   };
 
   try {
+    (await createLogger()).info(
+      isFormData
+        ? `${JSON.stringify(Object.fromEntries(body.entries()))}`
+        : typeof body === "string"
+        ? `${JSON.stringify(body)}`
+        : `${JSON.stringify(body ?? params)}`
+    );
+
     const response = await axios<T>(axiosConfig);
+
+    if (response.status >= 400) {
+      (await createLogger()).api(
+        `${url} - ${method} - ${response.status} - ${JSON.stringify(
+          response.data
+        )}`
+      );
+    }
 
     return response.data;
   } catch (error: any) {
     const status = error.response?.status || "NO_RESPONSE";
     const data = error.response?.data || error.message;
+
+    (await createLogger()).api(
+      `${url} - ${method} - ${status} - ${JSON.stringify(data)}`,
+      true
+    );
 
     throw error;
   }

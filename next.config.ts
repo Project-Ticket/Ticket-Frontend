@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
       "images.pexels.com",
       "10.255.10.219",
       "10.255.10.154",
+      "localhost",
     ],
   },
 

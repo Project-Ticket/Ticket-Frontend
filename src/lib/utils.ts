@@ -1,3 +1,4 @@
+import { API_CODE } from "@/constants/api_constant";
 import { FormStateInterface } from "@/interfaces";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -9,9 +10,16 @@ export function cn(...inputs: ClassValue[]) {
 export function showMessageError(error: any, values?: any): FormStateInterface {
   let message = error?.response?.data?.message || error?.message || "Failed";
 
+  let data;
+
+  if (error.response.status == API_CODE.UNPROCESSABLE_ENTITY) {
+    data = error.response.data.data.errors;
+  }
+
   return {
     error: {
       message,
+      data,
     },
     values,
   };

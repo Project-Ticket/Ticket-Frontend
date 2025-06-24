@@ -24,12 +24,12 @@ import {
 } from "@/validations/organizer_validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Grid } from "@radix-ui/themes";
-import { Save } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function DashboardOrganizerPage() {
+export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [organizer, setOrganizer] = useState<OrganizerInterface>();
   const form = useForm<UpdateProfileOrganizer>({
@@ -61,13 +61,22 @@ export default function DashboardOrganizerPage() {
 
     try {
       const response = await handleUpdate(formData, organizer?.uuid!);
-      console.log(response);
 
       if (response.success?.status) {
+        setOrganizer(response.success?.data);
         toastSuccess(response.success.message);
       }
 
       if (response.error) {
+        if (response.error.data) {
+          Object.entries(response.error.data).forEach(([key, messages]) => {
+            form.setError(key as keyof UpdateProfileOrganizer, {
+              type: "server",
+              message: (messages as string[])[0],
+            });
+          });
+        }
+
         toastError(response.error.message);
       }
     } catch (error) {
@@ -231,8 +240,13 @@ export default function DashboardOrganizerPage() {
             </Grid>
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button type="submit" variant={"primary"} size={"sm"}>
-              <Save /> Save
+            <Button
+              type="submit"
+              variant={"primary"}
+              size={"sm"}
+              disabled={isLoading}
+            >
+              {isLoading ? <Loader2 className="animate-spin" /> : <Save />} Save
             </Button>
           </CardFooter>
         </Card>

@@ -21,6 +21,7 @@ export const handleRegister = async (formData: FormData) => {
 
 export const handleUpdate = async (formData: FormData, uuid: string) => {
   formData.append("_method", "PUT");
+  formData.append("description", "");
 
   try {
     const response = await serverFetcher(
