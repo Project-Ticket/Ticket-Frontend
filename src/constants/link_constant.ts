@@ -15,6 +15,11 @@ export const APP_LINK = {
       PORTFOLIO: "/dashboard/organizer/portfolio",
       DOCUMENT: "/dashboard/organizer/document",
     },
+    EVENT: {
+      DEFAULT: "/dashboard/events",
+      CREATE: "/dashboard/event/create",
+      UPDATE: "/dashboard/event/:id/edit",
+    },
   },
   VENDOR: {
     DEFAULT: "/vendor",

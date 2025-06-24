@@ -47,7 +47,7 @@ const navMain = [
       },
       {
         title: "Events",
-        url: APP_LINK.DASHBOARD.DEFAULT,
+        url: APP_LINK.DASHBOARD.EVENT.DEFAULT,
         icon: CalendarDays,
       },
       {

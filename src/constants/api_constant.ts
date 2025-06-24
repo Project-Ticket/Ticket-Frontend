@@ -9,6 +9,15 @@ export const API_LINK = {
     STORE: "event-organizer/store",
     UPDATE: "event-organizer/:id/update",
   },
+  EVENT: {
+    CATEGORY: "category",
+    INDEX: "event",
+    STORE: "event/store",
+    SHOW: "event/:slug",
+    UPDATE: "event/:slug/update",
+    DELETE: "event/:slug/delete",
+    UPDATE_STATUS: "event/:slug/update-status",
+  },
   USER: {},
 };
 

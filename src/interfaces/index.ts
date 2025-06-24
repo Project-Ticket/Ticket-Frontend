@@ -86,3 +86,13 @@ export interface OrganizerInterface extends CommonInterface {
   reviewed_at: string;
   status: number;
 }
+
+export interface CategoryInterface extends CommonInterface {
+  name: string;
+  slug: string;
+  description: string;
+  icon: string;
+  color: string;
+  is_active: boolean;
+  sort_order: boolean;
+}
