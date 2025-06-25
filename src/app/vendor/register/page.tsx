@@ -140,10 +140,10 @@ function FormStepperComponent() {
     formData.append("bank_account_number", data?.bank_account_number || "");
 
     data?.required_documents?.map((item, index) => {
-      formData.append(`required_documents[${index}]`, item);
+      formData.append(`required_documents[${index}]`, item.file);
     });
     data?.uploaded_documents?.map((item, index) => {
-      formData.append(`uploaded_documents[${index}]`, item);
+      formData.append(`uploaded_documents[${index}]`, item.file);
     });
 
     try {
@@ -257,7 +257,6 @@ function ProfileForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Organizer Name"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -275,7 +274,6 @@ function ProfileForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Contact Person"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -293,7 +291,6 @@ function ProfileForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"1234567890"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -311,7 +308,6 @@ function ProfileForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"contact@mailinator.com"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -363,7 +359,6 @@ function ProfileForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Description"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -400,7 +395,6 @@ function AddressForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Province"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -419,7 +413,6 @@ function AddressForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"City"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -438,7 +431,6 @@ function AddressForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"12345"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -457,7 +449,6 @@ function AddressForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Address"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -494,7 +485,6 @@ function BankForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Bank Name"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -513,7 +503,6 @@ function BankForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Bank Account Name"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -532,7 +521,6 @@ function BankForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"Bank Account Number"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -569,7 +557,6 @@ function PortfolioForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"http://website.com"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -588,7 +575,6 @@ function PortfolioForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"http://instagram.com"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -606,7 +592,6 @@ function PortfolioForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"http://facebook.com"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -624,7 +609,6 @@ function PortfolioForm({ isLoading }: { isLoading: boolean }) {
                       id={field.name}
                       {...form.register(field.name)}
                       disabled={isLoading}
-                      value={"http://twitter.com"}
                     />
                   </FormControl>
                   <FormMessage />

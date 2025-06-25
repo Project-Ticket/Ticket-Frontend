@@ -62,9 +62,9 @@ export const createAddressOrganizer = z.object({
 
 export const createPortfolioOrganizer = z.object({
   website: z.string().url().min(3).max(150),
-  instagram: z.string().url().min(3).max(150),
-  twitter: z.string().url().min(3).max(150),
-  facebook: z.string().url().min(3).max(150),
+  instagram: z.nullable(z.string().url().min(3).max(150)),
+  twitter: z.nullable(z.string().url().min(3).max(150)),
+  facebook: z.nullable(z.string().url().min(3).max(150)),
 });
 
 export const createBankOrganizer = z.object({

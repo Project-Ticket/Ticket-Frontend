@@ -43,3 +43,18 @@ export const handleLogout = async () => {
 
   cookieStore.delete(TOKEN_SETTING.TOKEN);
 };
+
+export const handleGetQrData = async (qrCode: string) => {
+  try {
+    const response = await serverFetcher("/ticket/get-ticket-by-qrcode", {
+      method: "GET",
+      params: {
+        qr_code: qrCode,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};

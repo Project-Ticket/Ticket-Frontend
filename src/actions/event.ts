@@ -16,3 +16,16 @@ export const handleGetCategory = async () => {
     throw error;
   }
 };
+
+export const handleCreate = async (formData: FormData) => {
+  try {
+    const response = await serverFetcher(API_LINK.EVENT.STORE, {
+      method: "POST",
+      body: formData,
+    });
+
+    return showMessageSuccess(response.message);
+  } catch (error: any) {
+    return showMessageError(error);
+  }
+};

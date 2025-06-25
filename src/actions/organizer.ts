@@ -13,15 +13,12 @@ export const handleRegister = async (formData: FormData) => {
 
     return showMessageSuccess(response.message);
   } catch (error: any) {
-    console.log(error);
-
     return showMessageError(error);
   }
 };
 
 export const handleUpdate = async (formData: FormData, uuid: string) => {
   formData.append("_method", "PUT");
-  formData.append("description", "");
 
   try {
     const response = await serverFetcher(
