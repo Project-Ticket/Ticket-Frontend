@@ -98,7 +98,7 @@ export default function VendorRegisterPage() {
   return (
     <LandingLayout>
       <Container px={"4"} py={"9"}>
-        <StepperProvider variant={cn(isMobile ? "vertical" : "horizontal")}>
+        <StepperProvider variant={isMobile ? "vertical" : "horizontal"}>
           <FormStepperComponent />
         </StepperProvider>
       </Container>
@@ -139,10 +139,10 @@ function FormStepperComponent() {
     formData.append("bank_account_name", data?.bank_account_name || "");
     formData.append("bank_account_number", data?.bank_account_number || "");
 
-    data?.required_documents?.map((item, index) => {
+    data?.required_documents?.map((item: any, index) => {
       formData.append(`required_documents[${index}]`, item.file);
     });
-    data?.uploaded_documents?.map((item, index) => {
+    data?.uploaded_documents?.map((item: any, index) => {
       formData.append(`uploaded_documents[${index}]`, item.file);
     });
 

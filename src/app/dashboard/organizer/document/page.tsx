@@ -105,7 +105,7 @@ export default function Page() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card className="shadow-xs border-0">
-          <CardContent>
+          {/* <CardContent>
             <Grid columns={{ initial: "1", md: "2" }} gap={"5"}>
               <FormField
                 control={form.control}
@@ -170,7 +170,7 @@ export default function Page() {
             >
               {isLoading ? <Loader2 className="animate-spin" /> : <Save />} Save
             </Button>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
       </form>
     </Form>

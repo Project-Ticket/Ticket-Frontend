@@ -18,7 +18,7 @@ export const createEventGeneral = z
     ),
     registration_start: z.date(),
     registration_end: z.date(),
-    is_featured: z.boolean().optional().default(false),
+    is_featured: z.boolean(),
     tags: z.array(z.string()).optional(),
     start_datetime: z.date(),
     end_datetime: z.date(),

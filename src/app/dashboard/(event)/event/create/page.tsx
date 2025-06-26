@@ -541,7 +541,7 @@ function DetailEventForm({ categories }: { categories: CategoryInterface[] }) {
                 <FormControl>
                   <Switch
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(e) => field.onChange(e)}
                   />
                 </FormControl>
               </FormItem>
