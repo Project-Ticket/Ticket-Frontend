@@ -42,34 +42,34 @@ export async function serverFetcher<T = any>(
   try {
     const response = await axios<T>(axiosConfig);
 
-    if (process.env.NODE_ENV === "development") {
-      (await createLogger()).info(
-        isFormData
-          ? `${JSON.stringify(Object.fromEntries(body.entries()))}`
-          : typeof body === "string"
-          ? `${JSON.stringify(body)}`
-          : `${JSON.stringify(body ?? params)}`
-      );
-      if (response.status >= 400) {
-        (await createLogger()).api(
-          `${url} - ${method} - ${response.status} - ${JSON.stringify(
-            response.data
-          )}`
-        );
-      }
-    }
+    // if (process.env.NODE_ENV === "development") {
+    //   (await createLogger()).info(
+    //     isFormData
+    //       ? `${JSON.stringify(Object.fromEntries(body.entries()))}`
+    //       : typeof body === "string"
+    //       ? `${JSON.stringify(body)}`
+    //       : `${JSON.stringify(body ?? params)}`
+    //   );
+    //   if (response.status >= 400) {
+    //     (await createLogger()).api(
+    //       `${url} - ${method} - ${response.status} - ${JSON.stringify(
+    //         response.data
+    //       )}`
+    //     );
+    //   }
+    // }
 
     return response.data;
   } catch (error: any) {
-    if (process.env.NODE_ENV === "development") {
-      const status = error.response?.status || "NO_RESPONSE";
-      const data = error.response?.data || error.message;
+    // if (process.env.NODE_ENV === "development") {
+    //   const status = error.response?.status || "NO_RESPONSE";
+    //   const data = error.response?.data || error.message;
 
-      (await createLogger()).api(
-        `${url} - ${method} - ${status} - ${JSON.stringify(data)}`,
-        true
-      );
-    }
+    //   (await createLogger()).api(
+    //     `${url} - ${method} - ${status} - ${JSON.stringify(data)}`,
+    //     true
+    //   );
+    // }
 
     throw error;
   }
