@@ -1,2 +1,6 @@
+[build]
+  command = "npm run build"
+  publish = ".next"  # atau biarkan dikosongkan, plugin akan mengaturnya
+
 [[plugins]]
-package = "@netlify/plugin-nextjs"
+  package = "@netlify/plugin-nextjs"
