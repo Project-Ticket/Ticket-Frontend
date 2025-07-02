@@ -90,6 +90,7 @@ export default function Page() {
 
     try {
       const user = (await handleGetProfile()) as UserInterface;
+
       const organizer = user.event_organizer!;
 
       form.setValue("organizer_name", organizer.organization_name);

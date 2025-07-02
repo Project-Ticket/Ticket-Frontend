@@ -32,11 +32,11 @@ export default function DashboardOrganizerLayout({
       title: "Portfolio Organizer",
       path: APP_LINK.DASHBOARD.ORGANIZER.PORTFOLIO,
     },
-    {
-      icon: File,
-      title: "Document Organizer",
-      path: APP_LINK.DASHBOARD.ORGANIZER.DOCUMENT,
-    },
+    // {
+    //   icon: File,
+    //   title: "Document Organizer",
+    //   path: APP_LINK.DASHBOARD.ORGANIZER.DOCUMENT,
+    // },
   ];
 
   return (
@@ -50,7 +50,7 @@ export default function DashboardOrganizerLayout({
       />
 
       <Tabs defaultValue={currentTab}>
-        <TabsList className="mb-3">
+        <TabsList className="mb-3 overflow-x-auto max-w-sm md:max-w-full">
           {menuItems.map((item, i) => (
             <TabsTrigger value={item.path} key={i} asChild>
               <Link href={item.path}>

@@ -1,11 +1,16 @@
 "use client";
 
-import { handleCreate, handleGetCategory } from "@/actions/event";
+import {
+  handleGetCategory,
+  handleGetEvent,
+  handleUpdate,
+} from "@/actions/event";
 import AppTitle from "@/components/app-title";
 import DateTimePicker from "@/components/datetime-picker";
 import TagsInput from "@/components/tags-input";
 import TipTapEditor from "@/components/tiptapEditor";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -17,6 +22,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -25,18 +35,20 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { EVENT_TYPE_ARRAY } from "@/constants";
+import { EVENT_TYPE_ARRAY, EVENT_TYPE_OBJECT } from "@/constants";
 import { APP_LINK } from "@/constants/link_constant";
-import { CategoryInterface } from "@/interfaces";
+import { CategoryInterface, EventInterface } from "@/interfaces";
 import { toastError, toastSuccess } from "@/lib/toast";
-import { toTitleCase } from "@/lib/utils";
+import { getImageUrl, toTitleCase } from "@/lib/utils";
 import {
-  createEventGeneral,
-  CreateEventGeneral,
+  updateEventGeneral,
+  UpdateEventGeneral,
 } from "@/validations/event_validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Flex, Grid } from "@radix-ui/themes";
+import { format } from "date-fns";
 import {
+  ChevronDownIcon,
   ChevronLeft,
   Clock,
   Globe,
@@ -51,19 +63,21 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, useFormContext } from "react-hook-form";
 
 export default function Page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [event, setEvent] = useState<EventInterface>();
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
-  const form = useForm<CreateEventGeneral>({
-    resolver: zodResolver(createEventGeneral),
+  const form = useForm<UpdateEventGeneral>({
+    resolver: zodResolver(updateEventGeneral),
     defaultValues: {
       category: 0,
       title: "",
@@ -78,6 +92,22 @@ export default function Page() {
       end_datetime: undefined,
     },
   });
+
+  const onGetEvent = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = (await handleGetEvent(
+        searchParams.get("id")!
+      )) as EventInterface;
+
+      setEvent(response);
+    } catch (error) {
+      router.back();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const onGetCategories = async () => {
     try {
@@ -95,7 +125,7 @@ export default function Page() {
     reader.readAsDataURL(file);
   };
 
-  const onHandleSubmit = async (data: CreateEventGeneral) => {
+  const onHandleUpdate = async (data: UpdateEventGeneral) => {
     setIsLoading(true);
 
     const formData = new FormData();
@@ -157,7 +187,11 @@ export default function Page() {
     }
 
     try {
-      const response = await handleCreate(formData);
+      const response = await handleUpdate(
+        formData,
+        String(searchParams.get("id"))
+      );
+      console.log(response);
 
       if (response.success.status) {
         toastSuccess(response.success.message);
@@ -175,8 +209,54 @@ export default function Page() {
   };
 
   useEffect(() => {
+    onGetEvent();
     onGetCategories();
   }, []);
+
+  useEffect(() => {
+    if (event && categories.length > 0) {
+      const formData = {
+        category: event.category.id,
+        type: event.type,
+        title: event.title,
+        description: event.description,
+        terms_conditions: event.terms_conditions,
+        registration_start: new Date(event.registration_start),
+        registration_end: new Date(event.registration_end),
+        is_featured: event.is_featured,
+        tags: event.tags?.map((tag) => tag.name),
+        start_datetime: new Date(event.start_datetime),
+        end_datetime: new Date(event.end_datetime),
+      } as UpdateEventGeneral;
+
+      if (
+        [EVENT_TYPE_OBJECT.ONLINE, EVENT_TYPE_OBJECT.HYBRID].includes(
+          event.type
+        )
+      ) {
+        formData.link = event.online_link;
+        formData.platform = event.online_platform;
+      }
+
+      if (
+        [EVENT_TYPE_OBJECT.OFFLINE, EVENT_TYPE_OBJECT.HYBRID].includes(
+          event.type
+        )
+      ) {
+        formData.venue_address = event.venue_address;
+        formData.venue_city = event.venue_city;
+        formData.venue_latitude = event.venue_latitude;
+        formData.venue_longitude = event.venue_longitude;
+        formData.venue_name = event.venue_name;
+        formData.venue_province = event.venue_province;
+        formData.min_age = event.min_age;
+        formData.max_age = event.max_age;
+      }
+
+      form.reset(formData);
+      setBannerPreview(getImageUrl(event.banner_image));
+    }
+  }, [event, categories]);
 
   return (
     <div>
@@ -191,7 +271,7 @@ export default function Page() {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onHandleSubmit)}
+          onSubmit={form.handleSubmit(onHandleUpdate)}
           className="space-y-6"
         >
           <Card className="shadow-xs">
@@ -601,10 +681,10 @@ export default function Page() {
 }
 
 function EventOnlineForm() {
-  const form = useFormContext<CreateEventGeneral>();
+  const form = useFormContext<UpdateEventGeneral>();
 
   return (
-    <div className="space-y-6 mb-6">
+    <div className="space-y-6">
       <FormField
         control={form.control}
         name="platform"
@@ -631,19 +711,17 @@ function EventOnlineForm() {
           <FormItem>
             <FormLabel>Meeting {toTitleCase(field.name || "")}</FormLabel>
             <FormControl>
-              <div>
-                <Input
-                  className="h-12"
-                  type="url"
-                  placeholder="https://example.com/meeting"
-                  {...field}
-                  autoComplete={field.name}
-                />
-                <p className="text-sm text-muted-foreground mt-2">
-                  Link will be shared with registered attendees
-                </p>
-              </div>
+              <Input
+                className="h-12"
+                type="url"
+                placeholder="https://example.com/meeting"
+                {...field}
+                autoComplete={field.name}
+              />
             </FormControl>
+            <p className="text-sm text-muted-foreground mt-2">
+              Link will be shared with registered attendees
+            </p>
             <FormMessage />
           </FormItem>
         )}
@@ -659,7 +737,7 @@ function EventOfflineForm({
   galleryPreviews: string[];
   onGalleryUpload: (files: FileList) => void;
 }) {
-  const form = useFormContext<CreateEventGeneral>();
+  const form = useFormContext<UpdateEventGeneral>();
 
   return (
     <>

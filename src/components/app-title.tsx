@@ -19,13 +19,11 @@ export default function AppTitle({
         className
       )}
     >
-      <div>
+      <div className="m-0">
         <Heading className="!text-2xl font-bold !tracking-tight">
           {title}
         </Heading>
-        {description && (
-          <Text className="text-gray-600 mt-2">{description}</Text>
-        )}
+        {description && <Text className="text-gray-600 ">{description}</Text>}
       </div>
       {children}
     </header>

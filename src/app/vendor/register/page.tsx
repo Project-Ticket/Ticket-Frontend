@@ -56,13 +56,6 @@ const {
   useStepper,
 } = defineStepper(
   {
-    id: "document",
-    title: "Document Organizer",
-    schema: createDocumentOrganizer,
-    Component: DocumentForm,
-    icon: <File />,
-  },
-  {
     id: "profile",
     title: "Profile Organizer",
     schema: createProfileOrganizer,
@@ -90,6 +83,13 @@ const {
     schema: createPortfolioOrganizer,
     Component: PortfolioForm,
     icon: <Send />,
+  },
+  {
+    id: "document",
+    title: "Document Organizer",
+    schema: createDocumentOrganizer,
+    Component: DocumentForm,
+    icon: <File />,
   }
 );
 
@@ -186,11 +186,11 @@ function FormStepperComponent() {
           ))}
         </StepperNavigation>
         {methods.switch({
-          document: ({ Component }) => <Component isLoading={isLoading} />,
           profile: ({ Component }) => <Component isLoading={isLoading} />,
           address: ({ Component }) => <Component isLoading={isLoading} />,
           bank: ({ Component }) => <Component isLoading={isLoading} />,
           portfolio: ({ Component }) => <Component isLoading={isLoading} />,
+          document: ({ Component }) => <Component isLoading={isLoading} />,
         })}
         <StepperControls>
           {!methods.isLast && (

@@ -135,13 +135,13 @@ export default function TipTapEditor({
   }, [editor, content]);
 
   return (
-    <Card className="p-0 gap-0 relative">
+    <Card className="p-0 gap-0 relative w-full">
       {isLoading && (
         <Box className="pointer-events-none cursor-not-allowed opacity-50 bg-white z-30 absolute top-0 left-0 w-full h-full rounded-lg"></Box>
       )}
       <Flex
-        align={{ initial: "start", md: "center" }}
-        direction={{ initial: "column", md: "row" }}
+        align={{ initial: "start", lg: "center" }}
+        direction={{ initial: "column", lg: "row" }}
         className="space-x-3 py-1"
       >
         <Flex align={{ initial: "center" }} className="space-x-3">

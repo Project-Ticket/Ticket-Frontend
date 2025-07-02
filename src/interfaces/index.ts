@@ -96,3 +96,37 @@ export interface CategoryInterface extends CommonInterface {
   is_active: boolean;
   sort_order: boolean;
 }
+
+export interface TagInterface extends CommonInterface {
+  name: string;
+}
+
+export interface EventInterface extends CommonInterface {
+  title: string;
+  slug: string;
+  description: string;
+  terms_conditions: string;
+  banner_image: string;
+  gallery_images?: any;
+  type: string;
+  venue_name: string;
+  venue_address: string;
+  venue_city: string;
+  venue_province: string;
+  venue_latitude: string;
+  venue_longitude: string;
+  online_platform: string;
+  online_link: string;
+  start_datetime: string;
+  end_datetime: string;
+  registration_start: string;
+  registration_end: string;
+  min_age: number;
+  max_age: number;
+  status: number;
+  is_featured: boolean;
+  views_count: number;
+  organizer: OrganizerInterface;
+  category: CategoryInterface;
+  tags?: TagInterface[];
+}
