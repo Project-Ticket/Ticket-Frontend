@@ -20,7 +20,7 @@ export default function AppTitle({
       )}
     >
       <div className="m-0">
-        <Heading className="!text-2xl font-bold !tracking-tight">
+        <Heading className="!text-2xl font-bold !tracking-tight capitalize">
           {title}
         </Heading>
         {description && <Text className="text-gray-600 ">{description}</Text>}

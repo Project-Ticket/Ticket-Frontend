@@ -18,6 +18,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavMain({
   title,
@@ -35,6 +36,7 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       {title && <SidebarGroupLabel>{title}</SidebarGroupLabel>}
@@ -52,7 +54,11 @@ export function NavMain({
                   <SidebarMenuButton
                     tooltip={item.title}
                     className="cursor-pointer"
-                    isActive={item.isActive}
+                    isActive={
+                      item.items.find((item) => item.url === pathname)
+                        ? true
+                        : false
+                    }
                   >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
@@ -76,7 +82,7 @@ export function NavMain({
             </Collapsible>
           ) : (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={item.isActive}>
+              <SidebarMenuButton asChild isActive={item.url === pathname}>
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>

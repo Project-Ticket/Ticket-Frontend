@@ -18,12 +18,20 @@ export const APP_LINK = {
     EVENT: {
       DEFAULT: "/dashboard/events",
       CREATE: "/dashboard/event/create",
-      EDIT: "/dashboard/event/edit?id=:slug",
+      EDIT: "/dashboard/event/edit?uid=:uid",
+      SHOW: "/dashboard/event/:uid",
+      TICKET: {
+        CREATE: "/dashboard/event/:uid/create",
+        EDIT: "/dashboard/event/:uid/edit?ticket_uid=:ticket_uid",
+      },
     },
   },
   VENDOR: {
     DEFAULT: "/vendor",
     REGISTER: "/vendor/register",
     REQUESTS: "/vendor/requests",
+  },
+  SETTINGS: {
+    DEFAULT: "/settings",
   },
 };

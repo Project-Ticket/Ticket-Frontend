@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { APP_LINK } from "@/constants/link_constant";
-import { ChevronRight, LogIn } from "lucide-react";
+import { ChevronRight, Loader, LogIn } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -116,7 +116,8 @@ export default function LoginPage() {
             variant={"primary"}
             disabled={isLoading}
           >
-            Login <ChevronRight />
+            Login
+            {isLoading ? <Loader className="animate-spin" /> : <ChevronRight />}
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-card text-muted-foreground relative z-10 px-2">

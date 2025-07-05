@@ -54,7 +54,7 @@ import {
   Globe,
   ImageIcon,
   InfoIcon,
-  Loader2,
+  Loader,
   MapPin,
   Save,
   Settings,
@@ -98,7 +98,7 @@ export default function Page() {
 
     try {
       const response = (await handleGetEvent(
-        searchParams.get("id")!
+        searchParams.get("uid")!
       )) as EventInterface;
 
       setEvent(response);
@@ -189,9 +189,8 @@ export default function Page() {
     try {
       const response = await handleUpdate(
         formData,
-        String(searchParams.get("id"))
+        String(searchParams.get("uid"))
       );
-      console.log(response);
 
       if (response.success.status) {
         toastSuccess(response.success.message);
@@ -261,12 +260,9 @@ export default function Page() {
   return (
     <div>
       <AppTitle title="Edit Event">
-        <Link
-          className={buttonVariants({ size: "sm", variant: "outline" })}
-          href={APP_LINK.DASHBOARD.EVENT.DEFAULT}
-        >
+        <Button onClick={() => router.back()} variant={"outline"} size="sm">
           <ChevronLeft /> Back
-        </Link>
+        </Button>
       </AppTitle>
 
       <Form {...form}>
@@ -670,8 +666,7 @@ export default function Page() {
 
           <Flex justify={"end"}>
             <Button type="submit" variant={"primary"} disabled={isLoading}>
-              {isLoading ? <Loader2 className=" animate-spin" /> : <Save />}{" "}
-              Save
+              {isLoading ? <Loader className=" animate-spin" /> : <Save />} Save
             </Button>
           </Flex>
         </form>

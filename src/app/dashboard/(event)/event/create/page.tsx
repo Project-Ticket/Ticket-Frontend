@@ -42,7 +42,7 @@ import {
   Globe,
   ImageIcon,
   InfoIcon,
-  Loader2,
+  Loader,
   MapPin,
   Save,
   Settings,
@@ -590,8 +590,7 @@ export default function Page() {
 
           <Flex justify={"end"}>
             <Button type="submit" variant={"primary"} disabled={isLoading}>
-              {isLoading ? <Loader2 className=" animate-spin" /> : <Save />}{" "}
-              Save
+              {isLoading ? <Loader className=" animate-spin" /> : <Save />} Save
             </Button>
           </Flex>
         </form>

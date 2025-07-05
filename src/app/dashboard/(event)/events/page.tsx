@@ -16,6 +16,7 @@ import {
   MoreVertical,
   Plus,
   Tag,
+  Ticket,
   Trash,
   Users,
 } from "lucide-react";
@@ -229,8 +230,18 @@ export default function Page() {
                   <DropdownMenuContent>
                     <DropdownMenuItem asChild>
                       <Link
+                        href={APP_LINK.DASHBOARD.EVENT.SHOW.replace(
+                          ":uid",
+                          event.slug
+                        )}
+                      >
+                        <Ticket /> Detail
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
                         href={APP_LINK.DASHBOARD.EVENT.EDIT.replace(
-                          ":slug",
+                          ":uid",
                           event.slug
                         )}
                       >

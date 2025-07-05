@@ -247,7 +247,6 @@ export const updateEventGeneral = z
   })
   .superRefine((data, ctx) => {
     // Validate offline/hybrid specific fields
-    console.log(data);
 
     if (["offline", "hybrid"].includes(data.type)) {
       if (!data.venue_name) {

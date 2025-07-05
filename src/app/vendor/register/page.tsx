@@ -10,6 +10,7 @@ import {
   ChevronRight,
   File,
   GitBranch,
+  Info,
   Map,
   Send,
 } from "lucide-react";
@@ -26,7 +27,7 @@ import { useForm, useFormContext } from "react-hook-form";
 import { useState } from "react";
 import { toastError, toastSuccess } from "@/lib/toast";
 import LandingLayout from "@/components/layout/landing";
-import { Container, Grid } from "@radix-ui/themes";
+import { Callout, Container, Grid } from "@radix-ui/themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   createAddressOrganizer,
@@ -46,6 +47,7 @@ import { defineStepper } from "@/components/stepper";
 import { Textarea } from "@/components/ui/textarea";
 import { MultiSelect } from "@/components/multi-select";
 import { useIsMobile } from "@/hooks/use-mobile";
+import Link from "next/link";
 
 const {
   StepperProvider,
@@ -98,6 +100,21 @@ export default function VendorRegisterPage() {
   return (
     <LandingLayout>
       <Container px={"4"} py={"9"}>
+        <Callout.Root className="mb-10" color="yellow">
+          <Callout.Icon>
+            <Info />
+          </Callout.Icon>
+          <Callout.Text>
+            <strong>Please!!!</strong> complete your profile before registering
+            as an Event Organizer in{" "}
+            <Link
+              href={APP_LINK.SETTINGS.DEFAULT}
+              className="cursor-pointer underline"
+            >
+              here
+            </Link>
+          </Callout.Text>
+        </Callout.Root>
         <StepperProvider variant={isMobile ? "vertical" : "horizontal"}>
           <FormStepperComponent />
         </StepperProvider>
