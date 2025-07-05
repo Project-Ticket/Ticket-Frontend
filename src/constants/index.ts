@@ -47,3 +47,14 @@ export const EVENT_STATUS_ARRAY = [
     value: "Completed",
   },
 ];
+
+export const GENDER = [
+  {
+    key: "male",
+    value: "Male",
+  },
+  {
+    key: "female",
+    value: "Female",
+  },
+];

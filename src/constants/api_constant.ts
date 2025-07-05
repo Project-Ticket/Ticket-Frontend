@@ -3,11 +3,12 @@ export const API_LINK = {
     LOGIN: "auth/login",
     REGISTER: "auth/register",
     CHECK: "auth/check",
-    PROFILE: "auth/profile",
   },
   ORGANIZER: {
     STORE: "event-organizer/store",
     UPDATE: "event-organizer/:id/update",
+    APPLICATION: "event-organizer/get-my-status-application",
+    REGENERATE_PAYMENT: "event-organizer/:uuid/regenerate-payment-invoice",
   },
   EVENT: {
     CATEGORY: "category",
@@ -29,7 +30,14 @@ export const API_LINK = {
       AVAILABLE: "ticket-type/:id/available",
     },
   },
-  USER: {},
+  USER: {
+    UPDATE_PROFILE: "user/update-profile",
+    PROFILE: "user/profile",
+  },
+  PAYMENT_METHOD: {
+    INDEX: "payment-method",
+    SHOW: "payment-method/:id/show",
+  },
 };
 
 export const API_CODE = {

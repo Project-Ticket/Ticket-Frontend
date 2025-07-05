@@ -151,7 +151,7 @@ function AuthMenu({
   const menu = [
     {
       title: "My Dashboard",
-      href: "/dashboard",
+      href: APP_LINK.DASHBOARD.DEFAULT,
       icon: LayoutDashboard,
       type: "link",
       show: user?.is_event_organizer,
@@ -172,7 +172,7 @@ function AuthMenu({
     },
     {
       title: "My Settings",
-      href: "#",
+      href: APP_LINK.SETTINGS.DEFAULT,
       icon: Settings,
       type: "link",
       show: true,

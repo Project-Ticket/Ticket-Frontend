@@ -85,6 +85,10 @@ export interface OrganizerInterface extends CommonInterface {
   reviewed_by: number;
   reviewed_at: string;
   status: number;
+  payment_reference?: string;
+  payment_method?: string;
+  payment_status?: string;
+  paid_at?: string;
 }
 
 export interface CategoryInterface extends CommonInterface {
@@ -129,4 +133,18 @@ export interface EventInterface extends CommonInterface {
   organizer: OrganizerInterface;
   category: CategoryInterface;
   tags?: TagInterface[];
+}
+
+export interface PaymentMethodInterface extends CommonInterface {
+  code: string;
+  name: string;
+  type: string;
+  description: string;
+  fee_percentage: string;
+  fee_fixed: string;
+  minimum_fee: string;
+  maximum_fee?: string;
+  is_active: boolean;
+  sort_order: number;
+  settings?: any;
 }

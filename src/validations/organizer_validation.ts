@@ -31,6 +31,7 @@ export const createOrganizer = z.object({
   bank_account_number: z.string().min(3).max(150),
   required_documents: z.array(z.string().min(1)).optional(),
   uploaded_documents: z.array(z.string().min(1)).optional(),
+  payment_method: z.string(),
 });
 
 export const createProfileOrganizer = z.object({
@@ -92,6 +93,7 @@ export const createDocumentOrganizer = z
           ),
       })
     ),
+    payment_method: z.string(),
   })
   .refine(
     (data) => data.uploaded_documents.length === data.required_documents.length,

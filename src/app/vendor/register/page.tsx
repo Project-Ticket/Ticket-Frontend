@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFormContext } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toastError, toastSuccess } from "@/lib/toast";
 import LandingLayout from "@/components/layout/landing";
 import { Callout, Container, Grid } from "@radix-ui/themes";
@@ -42,12 +42,27 @@ import {
   createProfileOrganizer,
   CreateProfileOrganizer,
 } from "@/validations/organizer_validation";
-import { handleRegister } from "@/actions/organizer";
+import {
+  handleGetApplicationStatus,
+  handleRegister,
+} from "@/actions/organizer";
 import { defineStepper } from "@/components/stepper";
 import { Textarea } from "@/components/ui/textarea";
 import { MultiSelect } from "@/components/multi-select";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
+import { PaymentMethodInterface, UserInterface } from "@/interfaces";
+import { getCookie } from "cookies-next";
+import { TOKEN_SETTING } from "@/constants";
+import { handleGetPaymentMethod } from "@/actions/payment";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 const {
   StepperProvider,
@@ -97,24 +112,49 @@ const {
 
 export default function VendorRegisterPage() {
   const isMobile = useIsMobile();
+  const router = useRouter();
+  const [user, setUser] = useState<UserInterface>();
+
+  const onGetMyApplicationStatus = async () => {
+    try {
+      const response = (await handleGetApplicationStatus()) as {
+        has_application: boolean;
+      };
+
+      if (response.has_application) {
+        router.push(APP_LINK.VENDOR.REQUEST);
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (getCookie(TOKEN_SETTING.USER)) {
+      setUser(JSON.parse(getCookie(TOKEN_SETTING.USER) as string));
+    }
+
+    onGetMyApplicationStatus();
+  }, []);
+
   return (
     <LandingLayout>
       <Container px={"4"} py={"9"}>
-        <Callout.Root className="mb-10" color="yellow">
-          <Callout.Icon>
-            <Info />
-          </Callout.Icon>
-          <Callout.Text>
-            <strong>Please!!!</strong> complete your profile before registering
-            as an Event Organizer in{" "}
-            <Link
-              href={APP_LINK.SETTINGS.DEFAULT}
-              className="cursor-pointer underline"
-            >
-              here
-            </Link>
-          </Callout.Text>
-        </Callout.Root>
+        {user && !user.phone && (
+          <Callout.Root className="mb-10" color="yellow">
+            <Callout.Icon>
+              <Info />
+            </Callout.Icon>
+            <Callout.Text>
+              <strong>Please!!!</strong> complete your profile before
+              registering as an Event Organizer in{" "}
+              <Link
+                href={APP_LINK.SETTINGS.DEFAULT}
+                className="cursor-pointer underline"
+              >
+                here
+              </Link>
+            </Callout.Text>
+          </Callout.Root>
+        )}
         <StepperProvider variant={isMobile ? "vertical" : "horizontal"}>
           <FormStepperComponent />
         </StepperProvider>
@@ -127,6 +167,9 @@ function FormStepperComponent() {
   const methods = useStepper();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<CreateOrganizer>();
+  const [paymentMethods, setPaymentMethods] = useState<
+    PaymentMethodInterface[]
+  >([]);
 
   const form = useForm({
     mode: "onTouched",
@@ -163,13 +206,73 @@ function FormStepperComponent() {
       formData.append(`uploaded_documents[${index}]`, item.file);
     });
 
+    formData.append("payment_method", data?.payment_method || "");
+
     try {
       const response = await handleRegister(formData);
+
+      // const response = {
+      //   success: {
+      //     status: true,
+      //     message: "success",
+      //     data: {
+      //       event_organizer: {
+      //         user_id: 4,
+      //         organization_name: "Tech Event Solutions",
+      //         organization_slug: "tech-event-solutions",
+      //         description:
+      //           "We are a professional event organizer specializing in technology conferences, workshops, and corporate events. With over 5 years of experience, we deliver exceptional experiences.",
+      //         logo: "event-organizers/logos/fqePSMpIHi7pNVvhPzF57cbHZdj9Er3XOcTQTErv.jpg",
+      //         banner:
+      //           "event-organizers/banners/u3GY5T0wAwJLX3ymCzYEKWUKsT05BRHxY82IqrBt.jpg",
+      //         website: "https://www.techevent.com",
+      //         instagram: "https://www.instagram.com/techevent",
+      //         twitter: "https://www.twitter.com/techevent",
+      //         facebook: "https://www.facebook.com/techevent",
+      //         address: "Jl. Sudirman No. 123, Kav. 45-46",
+      //         city: "Jakarta Selatan",
+      //         province: "DKI Jakarta",
+      //         postal_code: "12190",
+      //         contact_person: "John Doe",
+      //         contact_phone: "+62-21-12345678",
+      //         contact_email: "contact@techevent.com",
+      //         application_fee: 100000,
+      //         security_deposit: null,
+      //         required_documents: '["Business License"]',
+      //         uploaded_documents:
+      //           '["event-organizers\\/documents\\/1574329091_E_KTP_thumb_organizer_20250705231918.jpg"]',
+      //         application_submitted_at: "2025-07-05T16:19:18.000000Z",
+      //         verification_status: "pending",
+      //         application_status: "pending",
+      //         status: 1,
+      //         uuid: "b9e18807-befc-41b9-9204-8c410df72c71",
+      //         updated_at: "2025-07-05T16:19:20.000000Z",
+      //         created_at: "2025-07-05T16:19:18.000000Z",
+      //         id: 1,
+      //         payment_reference: "686950872bb5274445bebb31",
+      //         payment_method: "QRIS",
+      //         user: {
+      //           id: 4,
+      //           name: "John Doe",
+      //           email: "organizer@mailinator.com",
+      //         },
+      //       },
+      //       payment_url:
+      //         "https://checkout-staging.xendit.co/web/686950872bb5274445bebb31",
+      //       invoice_id: "686950872bb5274445bebb31",
+      //       total_amount: 100700,
+      //       payment_method: "QRIS",
+      //     },
+      //   },
+      //   error: {
+      //     message: "error",
+      //   },
+      // };
 
       if (response.success?.status) {
         form.reset();
         toastSuccess(response.success.message);
-        window.location.href = APP_LINK.VENDOR.REQUESTS;
+        window.open(response.success.data.payment_url, "_blank");
       }
 
       if (response.error) {
@@ -181,6 +284,18 @@ function FormStepperComponent() {
       setIsLoading(false);
     }
   };
+
+  const onGetPaymentMethod = async () => {
+    try {
+      const response = await handleGetPaymentMethod();
+
+      setPaymentMethods(response);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    onGetPaymentMethod();
+  }, []);
 
   return (
     <Form {...form}>
@@ -205,9 +320,13 @@ function FormStepperComponent() {
         {methods.switch({
           profile: ({ Component }) => <Component isLoading={isLoading} />,
           address: ({ Component }) => <Component isLoading={isLoading} />,
-          bank: ({ Component }) => <Component isLoading={isLoading} />,
+          bank: ({ Component }) => (
+            <Component isLoading={isLoading} paymentMethods={paymentMethods} />
+          ),
           portfolio: ({ Component }) => <Component isLoading={isLoading} />,
-          document: ({ Component }) => <Component isLoading={isLoading} />,
+          document: ({ Component }) => (
+            <Component isLoading={isLoading} paymentMethods={paymentMethods} />
+          ),
         })}
         <StepperControls>
           {!methods.isLast && (
@@ -479,7 +598,13 @@ function AddressForm({ isLoading }: { isLoading: boolean }) {
   );
 }
 
-function BankForm({ isLoading }: { isLoading: boolean }) {
+function BankForm({
+  isLoading,
+  paymentMethods,
+}: {
+  isLoading: boolean;
+  paymentMethods: PaymentMethodInterface[];
+}) {
   const form = useFormContext<CreateBankOrganizer>();
 
   return (
@@ -497,12 +622,25 @@ function BankForm({ isLoading }: { isLoading: boolean }) {
                 <FormItem>
                   <FormLabel>{toTitleCase(field.name)}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      id={field.name}
-                      {...form.register(field.name)}
-                      disabled={isLoading}
-                    />
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {paymentMethods.map((paymentMethod) => (
+                          <SelectItem
+                            key={paymentMethod.id}
+                            value={paymentMethod.name}
+                          >
+                            {paymentMethod.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -639,7 +777,13 @@ function PortfolioForm({ isLoading }: { isLoading: boolean }) {
   );
 }
 
-function DocumentForm({ isLoading }: { isLoading: boolean }) {
+function DocumentForm({
+  isLoading,
+  paymentMethods,
+}: {
+  isLoading: boolean;
+  paymentMethods: PaymentMethodInterface[];
+}) {
   const documentTypes = [
     { value: "KTP", label: "KTP" },
     { value: "NPWP", label: "NPWP" },
@@ -707,6 +851,38 @@ function DocumentForm({ isLoading }: { isLoading: boolean }) {
                 />
               </div>
             ))}
+
+            <FormField
+              control={form.control}
+              name="payment_method"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{toTitleCase(field.name)}</FormLabel>
+                  <FormControl>
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {paymentMethods.map((paymentMethod) => (
+                          <SelectItem
+                            key={paymentMethod.id}
+                            value={paymentMethod.code}
+                          >
+                            {paymentMethod.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </Grid>
         </CardContent>
       </Card>
