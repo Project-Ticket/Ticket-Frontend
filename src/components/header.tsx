@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Box, Container, Flex } from "@radix-ui/themes";
 import { deleteCookie, getCookie } from "cookies-next";
-import { TOKEN_SETTING } from "@/constants";
+import { APPROVED, TOKEN_SETTING, VERIFIED } from "@/constants";
 import {
   BadgeDollarSign,
   LayoutDashboard,
@@ -37,6 +37,7 @@ import { handleLogout } from "@/actions/auth";
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isOrganizer, setIsOrganizer] = useState(false);
   const isMobile = useIsMobile();
   const [user, setUser] = useState<UserInterface>();
 
@@ -50,7 +51,17 @@ export default function Header() {
   useEffect(() => {
     if (getCookie(TOKEN_SETTING.USER)) {
       setIsAuthenticated(true);
-      setUser(JSON.parse(getCookie(TOKEN_SETTING.USER) as string));
+
+      const userCookie = JSON.parse(getCookie(TOKEN_SETTING.USER) as string);
+      setUser(userCookie);
+
+      setIsOrganizer(
+        userCookie?.event_organizer_details &&
+          userCookie?.event_organizer_details.application_status_organizer ===
+            APPROVED &&
+          userCookie?.event_organizer_details.verification_status_organizer ===
+            VERIFIED
+      );
     }
   }, []);
 
@@ -87,6 +98,7 @@ export default function Header() {
                   isAuthenticated={isAuthenticated}
                   isMobile={isMobile}
                   user={user}
+                  isOrganizer={isOrganizer}
                 />
               </div>
             </>
@@ -142,11 +154,13 @@ function AuthMenu({
   isMobile,
   user,
   onLogout,
+  isOrganizer,
 }: {
   isAuthenticated: boolean;
   isMobile: boolean;
   user?: UserInterface;
   onLogout?: () => void;
+  isOrganizer?: boolean;
 }) {
   const menu = [
     {
@@ -154,7 +168,7 @@ function AuthMenu({
       href: APP_LINK.DASHBOARD.DEFAULT,
       icon: LayoutDashboard,
       type: "link",
-      show: user?.is_event_organizer,
+      show: isOrganizer,
     },
     {
       title: "My Transactions",
@@ -183,7 +197,7 @@ function AuthMenu({
     <>
       {isAuthenticated ? (
         <>
-          {!isMobile && !user?.is_event_organizer && (
+          {!isMobile && !isOrganizer && (
             <Link
               href={APP_LINK.VENDOR.REGISTER}
               className="text-sm font-medium text-gray-700"
@@ -255,7 +269,7 @@ function AuthMenu({
           align={{ sm: "center" }}
           direction={{ initial: "column", sm: "row" }}
         >
-          {!isMobile && isAuthenticated && !user?.is_event_organizer && (
+          {!isMobile && isAuthenticated && !isOrganizer && (
             <Link
               href={APP_LINK.VENDOR.REGISTER}
               className="text-sm font-medium text-gray-700"

@@ -52,8 +52,8 @@ export const createEventGeneral = z
       .string()
       .min(1, "Venue longitude is required")
       .optional(),
-    min_age: z.number().min(0, "Minimum age must be 0 or greater").optional(),
-    max_age: z.number().min(0, "Maximum age must be 0 or greater").optional(),
+    min_age: z.number().min(1, "Minimum age must be 1 or greater").optional(),
+    max_age: z.number().min(1, "Maximum age must be 1 or greater").optional(),
 
     // online fields - conditional
     platform: z.string().min(3, "Platform is required").max(150).optional(),

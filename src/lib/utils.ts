@@ -3,6 +3,13 @@ import { FormStateInterface } from "@/interfaces";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import Swal from "sweetalert2";
+import {
+  APPROVED,
+  PENDING,
+  REJECTED,
+  UNDER_REVIEW,
+  VERIFIED,
+} from "@/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -103,4 +110,35 @@ export const formatRupiah = (value: number) => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+};
+
+export const renderStatus = (status: string) => {
+  switch (status) {
+    case PENDING:
+      return {
+        variant: "gray",
+        text: toTitleCase(status),
+      };
+    case APPROVED:
+    case VERIFIED:
+      return {
+        variant: "green",
+        text: toTitleCase(status),
+      };
+    case UNDER_REVIEW:
+      return {
+        variant: "default",
+        text: toTitleCase(status),
+      };
+    case REJECTED:
+      return {
+        variant: "destructive",
+        text: toTitleCase(status),
+      };
+    default:
+      return {
+        variant: "default",
+        text: toTitleCase(status),
+      };
+  }
 };

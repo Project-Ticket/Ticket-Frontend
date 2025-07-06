@@ -30,6 +30,7 @@ export const APP_LINK = {
     DEFAULT: "/vendor",
     REGISTER: "/vendor/register",
     REQUEST: "/vendor/request",
+    EDIT: "/vendor/request/edit",
   },
   SETTINGS: {
     DEFAULT: "/settings",

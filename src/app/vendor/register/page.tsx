@@ -200,7 +200,7 @@ function FormStepperComponent() {
     formData.append("bank_account_number", data?.bank_account_number || "");
 
     data?.required_documents?.map((item: any, index) => {
-      formData.append(`required_documents[${index}]`, item.file);
+      formData.append(`required_documents[${index}]`, item);
     });
     data?.uploaded_documents?.map((item: any, index) => {
       formData.append(`uploaded_documents[${index}]`, item.file);

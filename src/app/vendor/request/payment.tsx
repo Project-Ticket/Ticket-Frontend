@@ -17,14 +17,16 @@ import {
 import { Label } from "@/components/ui/label";
 import { OrganizerInterface, PaymentMethodInterface } from "@/interfaces";
 import { toastError, toastSuccess } from "@/lib/toast";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, renderStatus, toTitleCase } from "@/lib/utils";
 import { Box, Container, Flex, Grid, Text } from "@radix-ui/themes";
 import { format } from "date-fns";
 import {
   CheckCircle,
   Clock,
+  Edit,
   ExternalLink,
   FileText,
+  Info,
   Loader,
   Mail,
   MapPin,
@@ -50,6 +52,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { REJECTED } from "@/constants";
+import { APP_LINK } from "@/constants/link_constant";
 
 type ApplicationInterface = {
   has_application: boolean;
@@ -142,9 +146,18 @@ export default function Payment({
                     <CardTitle className="text-xl">
                       {application?.organizer.organization_name}
                     </CardTitle>
-                    <Badge className="capitalize">
+                    <Badge
+                      className="capitalize"
+                      variant={
+                        renderStatus(application?.organizer.application_status)
+                          .variant as any
+                      }
+                    >
                       <Timer />
-                      {application?.organizer.application_status}
+                      {
+                        renderStatus(application?.organizer.application_status)
+                          .text
+                      }
                     </Badge>
                   </Grid>
                 </Flex>
@@ -240,111 +253,148 @@ export default function Payment({
                 </Card>
               </Box>
             </Grid>
-            <Card className="bg-yellow-50 border-yellow-200">
-              <CardHeader>
-                <Flex
-                  align={{ initial: "start", md: "center" }}
-                  justify={"between"}
-                  gap={"3"}
-                  direction={{ initial: "column", md: "row" }}
-                >
-                  <Flex align={{ initial: "start", md: "center" }} gap={"3"}>
-                    <Clock className="text-yellow-700" />
-                    <Grid gap={"1"}>
-                      <CardTitle className="text-yellow-900">
-                        Payment Pending
-                      </CardTitle>
-                      <CardDescription className="text-yellow-700">
-                        Complete your payment to activate your organizer account
-                      </CardDescription>
-                    </Grid>
+
+            {!application.organizer.paid_at && (
+              <Card className="bg-yellow-50 border-yellow-200">
+                <CardHeader>
+                  <Flex
+                    align={{ initial: "start", md: "center" }}
+                    justify={"between"}
+                    gap={"3"}
+                    direction={{ initial: "column", md: "row" }}
+                  >
+                    <Flex align={{ initial: "start", md: "center" }} gap={"3"}>
+                      <Clock className="text-yellow-700" />
+                      <Grid gap={"1"}>
+                        <CardTitle className="text-yellow-900">
+                          Payment Pending
+                        </CardTitle>
+                        <CardDescription className="text-yellow-700">
+                          Complete your payment to activate your organizer
+                          account
+                        </CardDescription>
+                      </Grid>
+                    </Flex>
+
+                    <Box>
+                      <Button
+                        variant={"warning"}
+                        onClick={() => setIsDialogOpen(true)}
+                      >
+                        <RefreshCcw /> Regenerate Payment Link
+                      </Button>
+                    </Box>
                   </Flex>
+                </CardHeader>
+                <CardContent>
+                  <Grid columns={{ initial: "1", sm: "2" }} gap={"3"}>
+                    <Grid>
+                      <Label className="text-yellow-700">Amount Due:</Label>
+                      <Text
+                        weight={"bold"}
+                        className="capitalize text-yellow-900"
+                      >
+                        {formatRupiah(
+                          parseInt(
+                            application?.organizer.application_fee || "0"
+                          )
+                        )}
+                      </Text>
+                    </Grid>
+                    <Grid>
+                      <Label className="text-yellow-700">Payment Method:</Label>
+                      <Text
+                        weight={"bold"}
+                        className="capitalize text-yellow-900"
+                      >
+                        {application?.organizer.payment_method}
+                      </Text>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            )}
 
-                  <Box>
-                    <Button
-                      variant={"warning"}
-                      onClick={() => setIsDialogOpen(true)}
-                    >
-                      <RefreshCcw /> Regenerate Payment Link
-                    </Button>
-                  </Box>
-                </Flex>
-              </CardHeader>
-              <CardContent>
-                <Grid columns={{ initial: "1", sm: "2" }} gap={"3"}>
-                  <Grid>
-                    <Label className="text-yellow-700">Amount Due:</Label>
-                    <Text
-                      weight={"bold"}
-                      className="capitalize text-yellow-900"
-                    >
-                      {formatRupiah(
-                        parseInt(application?.organizer.application_fee || "0")
-                      )}
-                    </Text>
-                  </Grid>
-                  <Grid>
-                    <Label className="text-yellow-700">Payment Method:</Label>
-                    <Text
-                      weight={"bold"}
-                      className="capitalize text-yellow-900"
-                    >
-                      {application?.organizer.payment_method}
-                    </Text>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+            {application.organizer.required_documents &&
+              application.organizer.required_documents.length > 0 && (
+                <Card className="shadow-xs bg-muted">
+                  <CardHeader>
+                    <Flex align={"center"} gap={"3"}>
+                      <FileText className="text-indigo-500" />
+                      <CardTitle>Required Documents</CardTitle>
+                    </Flex>
+                  </CardHeader>
+                  <CardContent className="space-y-5">
+                    <Grid columns={{ initial: "1", sm: "2" }} gap={"3"}>
+                      <Grid>
+                        <Label>Required:</Label>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          {JSON.parse(
+                            application?.organizer.required_documents || ""
+                          ).map((doc: string, index: number) => (
+                            <li
+                              key={index}
+                              className="flex items-center gap-2 capitalize"
+                            >
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                              {doc}
+                            </li>
+                          ))}
+                        </ul>
+                      </Grid>
+                      <Grid>
+                        <Label>Uploaded:</Label>
+                        {JSON.parse(
+                          application?.organizer.uploaded_documents || ""
+                        ).length > 0 ? (
+                          <div className="flex items-center gap-2 text-green-600">
+                            <CheckCircle className="w-4 h-4" />
+                            {
+                              JSON.parse(
+                                application?.organizer.uploaded_documents || ""
+                              ).length
+                            }{" "}
+                            document(s) uploaded
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-yellow-600">
+                            <Clock className="w-4 h-4" />
+                            No documents uploaded
+                          </div>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              )}
 
-            <Card className="shadow-xs bg-muted">
-              <CardHeader>
-                <Flex align={"center"} gap={"3"}>
-                  <FileText className="text-indigo-500" />
-                  <CardTitle>Required Documents</CardTitle>
-                </Flex>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <Grid columns={{ initial: "1", sm: "2" }} gap={"3"}>
-                  <Grid>
-                    <Label>Required:</Label>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      {JSON.parse(
-                        application?.organizer.required_documents || ""
-                      ).map((doc: string, index: number) => (
-                        <li
-                          key={index}
-                          className="flex items-center gap-2 capitalize"
-                        >
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          {doc}
-                        </li>
-                      ))}
-                    </ul>
-                  </Grid>
-                  <Grid>
-                    <Label>Uploaded:</Label>
-                    {JSON.parse(application?.organizer.uploaded_documents || "")
-                      .length > 0 ? (
-                      <div className="flex items-center gap-2 text-green-600">
-                        <CheckCircle className="w-4 h-4" />
-                        {
-                          JSON.parse(
-                            application?.organizer.uploaded_documents || ""
-                          ).length
-                        }{" "}
-                        document(s) uploaded
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-yellow-600">
-                        <Clock className="w-4 h-4" />
-                        No documents uploaded
-                      </div>
-                    )}
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+            {(application.organizer.application_status === REJECTED ||
+              application.organizer.verification_status === REJECTED) && (
+              <Card className="shadow-xs bg-yellow-50 border-yellow-200">
+                <CardHeader>
+                  <Flex align={"center"} gap={"2"}>
+                    <Info className="text-yellow-900" />
+                    <CardTitle className="text-yellow-900">
+                      Rejection Reason
+                    </CardTitle>
+                  </Flex>
+                </CardHeader>
+                <CardContent className="text-yellow-700">
+                  {application?.organizer.rejection_reason}
+                </CardContent>
+              </Card>
+            )}
           </CardContent>
+          {(application.organizer.application_status === REJECTED ||
+            application.organizer.verification_status === REJECTED) && (
+            <CardFooter className="justify-end">
+              <Button variant={"warning"} asChild>
+                <Link href={APP_LINK.VENDOR.EDIT}>
+                  <Edit /> Edit Organizer
+                </Link>
+              </Button>
+            </CardFooter>
+          )}
         </Card>
       </Container>
 
@@ -388,7 +438,7 @@ export default function Payment({
 
             <CardFooter className="px-0 justify-end gap-3">
               <DialogClose asChild>
-                <Button type="button" variant="secondary">
+                <Button type="button" variant="secondary" disabled={isLoading}>
                   Cancel
                 </Button>
               </DialogClose>

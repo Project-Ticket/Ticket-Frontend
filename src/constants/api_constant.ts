@@ -7,6 +7,7 @@ export const API_LINK = {
   ORGANIZER: {
     STORE: "event-organizer/store",
     UPDATE: "event-organizer/:id/update",
+    RESUBMIT: "event-organizer/:id/resubmit-application",
     APPLICATION: "event-organizer/get-my-status-application",
     REGENERATE_PAYMENT: "event-organizer/:uuid/regenerate-payment-invoice",
   },

@@ -8,8 +8,9 @@ import { useEffect, useState } from "react";
 import Payment from "./payment";
 import { useRouter } from "next/navigation";
 import Invoice from "./invoice";
-import { Container } from "@radix-ui/themes";
+import { Container, Flex } from "@radix-ui/themes";
 import AppTitle from "@/components/app-title";
+import { Separator } from "@/components/ui/separator";
 
 type ApplicationInterface = {
   has_application: boolean;
@@ -42,23 +43,27 @@ export default function Page() {
 
   if (!application) {
     return (
-      <>
+      <LandingLayout>
         <Container px={"4"} py={"9"}>
           <AppTitle
             title="Event Organizer Application"
             description="Payment Status & Application Details"
           />
         </Container>
-      </>
+      </LandingLayout>
     );
   }
 
   return (
     <LandingLayout>
-      {application && application.organizer.paid_at ? (
-        <Invoice application={application} />
-      ) : (
-        <Payment application={application} />
+      <Payment application={application} />
+      {application && application.organizer.paid_at && (
+        <>
+          <Flex justify={"center"}>
+            <Separator className="max-w-sm" />
+          </Flex>
+          <Invoice application={application} />
+        </>
       )}
     </LandingLayout>
   );

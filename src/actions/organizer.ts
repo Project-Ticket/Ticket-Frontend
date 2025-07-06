@@ -35,6 +35,24 @@ export const handleUpdate = async (formData: FormData, uuid: string) => {
   }
 };
 
+export const handleResubmit = async (formData: FormData, uuid: string) => {
+  console.log(formData);
+
+  try {
+    const response = await serverFetcher(
+      API_LINK.ORGANIZER.RESUBMIT.replace(":id", uuid),
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    return showMessageSuccess(response.message, response.data);
+  } catch (error: any) {
+    return showMessageError(error);
+  }
+};
+
 export const handleGetApplicationStatus = async () => {
   try {
     const response = await serverFetcher(API_LINK.ORGANIZER.APPLICATION, {

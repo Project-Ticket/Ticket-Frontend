@@ -34,6 +34,60 @@ export const createOrganizer = z.object({
   payment_method: z.string(),
 });
 
+export const updateOrganizer = z.object({
+  organizer_name: z.string().min(3).max(150),
+  description: z.string().min(3).max(300),
+  logo: z
+    .instanceof(File, { message: "Input type is image" })
+    .refine(
+      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
+      { message: "Invalid image file type" }
+    )
+    .optional(),
+  banner: z
+    .instanceof(File, { message: "Input type is image" })
+    .refine(
+      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
+      { message: "Invalid image file type" }
+    )
+    .optional(),
+  website: z.string().url().min(3).max(150),
+  instagram: z.string().url().min(3).max(150),
+  twitter: z.string().url().min(3).max(150),
+  facebook: z.string().url().min(3).max(150),
+  address: z.string().min(3).max(150),
+  city: z.string().min(3).max(150),
+  province: z.string().min(3).max(150),
+  postal_code: z.string().min(5).max(7),
+  contact_person: z.string().min(3).max(150),
+  contact_phone: z.string().min(3).max(150),
+  contact_email: z.string().min(3).max(150),
+  bank_name: z.string().min(3).max(150).optional(),
+  bank_account_name: z.string().min(3).max(150).optional(),
+  bank_account_number: z.string().min(3).max(150).optional(),
+  required_documents: z.nullable(z.array(z.string().min(1))).optional(),
+  uploaded_documents: z
+    .nullable(
+      z.array(
+        z.object({
+          file: z
+            .instanceof(File, { message: "Input type is file" })
+            .refine(
+              (file) =>
+                [
+                  "image/png",
+                  "image/jpeg",
+                  "image/jpg",
+                  "application/pdf",
+                ].includes(file.type),
+              { message: "Invalid file type" }
+            ),
+        })
+      )
+    )
+    .optional(),
+});
+
 export const createProfileOrganizer = z.object({
   organizer_name: z.string().min(3).max(150),
   description: z.string().min(3).max(300),
@@ -127,6 +181,7 @@ export const updateProfileOrganizer = z.object({
 });
 
 export type CreateOrganizer = z.infer<typeof createOrganizer>;
+export type UpdateOrganizer = z.infer<typeof updateOrganizer>;
 export type CreateProfileOrganizer = z.infer<typeof createProfileOrganizer>;
 export type CreateAddressOrganizer = z.infer<typeof createAddressOrganizer>;
 export type CreatePortfolioOrganizer = z.infer<typeof createPortfolioOrganizer>;

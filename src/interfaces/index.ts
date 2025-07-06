@@ -47,7 +47,13 @@ export interface UserInterface extends CommonInterface {
   postal_code?: string;
   avatar?: string;
   status: boolean;
-  is_event_organizer: boolean;
+  event_organizer_details?: {
+    is_event_organizer: boolean;
+    application_status_organizer: string;
+    verification_status_organizer: string;
+    organizer_id: number;
+    organizer_uuid: string;
+  };
   event_organizer?: OrganizerInterface;
 }
 
