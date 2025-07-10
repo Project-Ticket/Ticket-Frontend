@@ -173,7 +173,6 @@ export default function Page() {
       }
 
       const response = await handleCreate(formData);
-      console.log(response);
 
       if (response.success.status) {
         toastSuccess("Event created successfully");

@@ -1,9 +1,13 @@
 "use client";
 
-import { handleDelete, handleGetEvent } from "@/actions/event";
+import {
+  handleDelete,
+  handleGetEvent,
+  handleUpdateStatus,
+} from "@/actions/event";
 import AppTitle from "@/components/app-title";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,16 +17,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { EVENT_STATUS_ARRAY, EVENT_TYPE_OBJECT } from "@/constants";
+import {
+  CANCELLED,
+  COMPLETED,
+  DRAFT,
+  EVENT_STATUS_ARRAY,
+  EVENT_TYPE_OBJECT,
+  PUBLISHED,
+} from "@/constants";
 import { APP_LINK } from "@/constants/link_constant";
-import { EventInterface } from "@/interfaces";
-import { cn, confirmDelete, getImageUrl } from "@/lib/utils";
+import { EventInterface, TicketTypeInterface } from "@/interfaces";
+import { cn, confirmDelete, formatRupiah, getImageUrl } from "@/lib/utils";
 import { Box, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import { format } from "date-fns";
 import {
   BarChart4,
   Calendar,
   ChartLine,
+  Check,
   CheckCircle,
   ChevronLeft,
   Edit,
@@ -35,7 +47,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -50,20 +62,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toastError, toastSuccess } from "@/lib/toast";
+import { handleGetTickets } from "@/actions/ticket";
 
 export default function Page() {
   const router = useRouter();
   const { uid } = useParams();
   const [event, setEvent] = useState<EventInterface>();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingTicket, setIsLoadingTicket] = useState(false);
   const [location, setLocation] = useState("");
+  const [tickets, setTickets] = useState<TicketTypeInterface[]>([]);
+
+  const getStatusInfo = (status: number) => {
+    return (
+      EVENT_STATUS_ARRAY.find((s) => s.key === status) || EVENT_STATUS_ARRAY[0]
+    );
+  };
 
   const onGetEvent = async () => {
     setIsLoading(true);
 
     try {
       const response = (await handleGetEvent(uid as string)) as EventInterface;
-      console.log(response);
 
       setEvent(response);
       setLocation(
@@ -105,9 +125,48 @@ export default function Page() {
     }
   };
 
+  const onGetEventTicket = async () => {
+    setIsLoadingTicket(true);
+
+    try {
+      const response = await handleGetTickets({
+        event_id: event?.id || "",
+      });
+
+      setTickets(response);
+    } catch (error: any) {
+    } finally {
+      setIsLoadingTicket(false);
+    }
+  };
+
+  const onUpdateStatus = async (status: number) => {
+    const formData = new FormData();
+    formData.append("status", status.toString());
+
+    try {
+      const response = await handleUpdateStatus(formData, event?.slug!);
+
+      if (response.success?.status) {
+        toastSuccess(response.success.message);
+        onGetEvent();
+      }
+
+      if (response.error) {
+        toastError(response.error.message);
+      }
+    } catch (error: any) {
+    } finally {
+    }
+  };
+
   useEffect(() => {
     onGetEvent();
   }, []);
+
+  useEffect(() => {
+    onGetEventTicket();
+  }, [event]);
 
   return (
     <div>
@@ -150,7 +209,39 @@ export default function Page() {
                     </Flex>
                   </Grid>
                 </Flex>
-                <Box>
+                <Flex align={"center"} gap={"2"}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className={cn(getStatusInfo(event?.status!).color)}
+                        disabled={[COMPLETED, CANCELLED].includes(
+                          event?.status!
+                        )}
+                      >
+                        {React.createElement(
+                          getStatusInfo(event?.status!).icon,
+                          {
+                            className: "w-8 h-8 text-white",
+                          }
+                        )}
+                        {getStatusInfo(event?.status!).value}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      {EVENT_STATUS_ARRAY.map((status) => (
+                        <DropdownMenuItem
+                          key={status.key}
+                          onClick={() => onUpdateStatus(status.key)}
+                          disabled={event?.total_order! > 0 && status.key === 1}
+                        >
+                          {React.createElement(getStatusInfo(status.key).icon, {
+                            className: "w-8 h-8",
+                          })}
+                          {status.value}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       className={buttonVariants({ variant: "ghost" })}
@@ -158,27 +249,31 @@ export default function Page() {
                       <MoreVerticalIcon />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem asChild>
-                        <Link
-                          href={APP_LINK.DASHBOARD.EVENT.EDIT.replace(
-                            ":uid",
-                            event?.slug!
-                          )}
-                        >
-                          <Edit /> Edit Event
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => onDelete(event?.slug || "")}
-                      >
-                        <Trash /> Delete
-                      </DropdownMenuItem>
+                      {COMPLETED !== event?.status! && (
+                        <>
+                          <DropdownMenuItem asChild>
+                            <Link
+                              href={APP_LINK.DASHBOARD.EVENT.EDIT.replace(
+                                ":uid",
+                                event?.slug!
+                              )}
+                            >
+                              <Edit /> Edit Event
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onDelete(event?.slug || "")}
+                          >
+                            <Trash /> Delete
+                          </DropdownMenuItem>
+                        </>
+                      )}
                       <DropdownMenuItem>
                         <CheckCircle /> Mark as Completed
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </Box>
+                </Flex>
               </Flex>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -244,112 +339,32 @@ export default function Page() {
                   <CardTitle>Ticket Management</CardTitle>
                 </Flex>
                 <Box>
-                  <Link
-                    className={buttonVariants({
-                      size: "sm",
-                      variant: "primary",
-                    })}
-                    href={APP_LINK.DASHBOARD.EVENT.TICKET.CREATE.replace(
-                      ":uid",
-                      event?.slug!
-                    )}
-                  >
-                    <Plus /> Add Ticket
-                  </Link>
+                  {[DRAFT, PUBLISHED].includes(event?.status!) && (
+                    <Link
+                      className={buttonVariants({
+                        size: "sm",
+                        variant: "primary",
+                      })}
+                      href={APP_LINK.DASHBOARD.EVENT.TICKET.CREATE.replace(
+                        ":uid",
+                        event?.slug!
+                      )}
+                    >
+                      <Plus /> Add Ticket
+                    </Link>
+                  )}
                 </Box>
               </Flex>
             </CardContent>
           </Card>
-          <Card className="shadow-xs group">
-            <CardHeader>
-              <Flex
-                align={{ initial: "start", md: "center" }}
-                justify={"between"}
-              >
-                <Grid gap={"3"}>
-                  <Flex gap={"3"} direction={{ initial: "column", md: "row" }}>
-                    <Flex gap={"3"} align={"center"}>
-                      <CardTitle>VIP Pass</CardTitle>
-                      <Badge variant={"green"}>Active</Badge>
-                    </Flex>
-                    <Heading className="text-indigo-600" size={"5"}>
-                      Rp 750.000
-                    </Heading>
-                  </Flex>
-                </Grid>
-                <Box>
-                  <Link
-                    href=""
-                    className={cn(
-                      buttonVariants({
-                        variant: "ghost",
-                      }),
-                      "opacity-100 md:opacity-0 group-hover:opacity-100"
-                    )}
-                  >
-                    <Edit />
-                  </Link>
-                </Box>
-              </Flex>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <CardDescription>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </CardDescription>
-              <Grid columns={{ initial: "2", md: "4" }} gap={"3"}>
-                <Grid>
-                  <Label className="font-light">Quantity</Label>
-                  <Text weight={"bold"} className="capitalize">
-                    100
-                  </Text>
-                </Grid>
-                <Grid>
-                  <Label className="font-light">Min Purchase</Label>
-                  <Text weight={"bold"} className="capitalize">
-                    1
-                  </Text>
-                </Grid>
-                <Grid>
-                  <Label className="font-light">Max Purchase</Label>
-                  <Text weight={"bold"} className="capitalize">
-                    5
-                  </Text>
-                </Grid>
-                <Grid>
-                  <Label className="font-light">Sort Order</Label>
-                  <Text weight={"bold"} className="capitalize">
-                    1
-                  </Text>
-                </Grid>
-              </Grid>
 
-              <Grid columns={{ initial: "1", md: "2" }} gap={"3"}>
-                <Grid>
-                  <Label className="font-light">Sale Start</Label>
-                  <Text weight={"bold"} className="capitalize">
-                    05 Agu 2025, 09.00
-                  </Text>
-                </Grid>
-                <Grid>
-                  <Label className="font-light">Sale End</Label>
-                  <Text weight={"bold"} className="capitalize">
-                    05 Sep 2025, 23.00
-                  </Text>
-                </Grid>
-              </Grid>
-            </CardContent>
-            <CardFooter>
-              <Grid gap={"1"}>
-                <Label className="font-light">Benefits</Label>
-                <Flex gap={"2"}>
-                  <Badge variant={"green"}>Free</Badge>
-                  <Badge variant={"green"}>Free</Badge>
-                  <Badge variant={"green"}>Free</Badge>
-                  <Badge variant={"green"}>Free</Badge>
-                </Flex>
-              </Grid>
-            </CardFooter>
-          </Card>
+          {tickets.map((ticket) => (
+            <TicketType
+              key={ticket.id}
+              ticket={ticket}
+              status={event?.status!}
+            />
+          ))}
         </Box>
         <Box className="col-span-3 lg:col-span-1 space-y-3">
           <Card className="shadow-xs">
@@ -359,12 +374,28 @@ export default function Page() {
                 <CardTitle>Other Informations</CardTitle>
               </Flex>
             </CardHeader>
+
             {[EVENT_TYPE_OBJECT.ONLINE, EVENT_TYPE_OBJECT.HYBRID].includes(
               event?.type!
             ) && <OnlineInformation event={event!} />}
             {[EVENT_TYPE_OBJECT.OFFLINE, EVENT_TYPE_OBJECT.HYBRID].includes(
               event?.type!
             ) && <OfflineInformation event={event!} />}
+            <CardFooter className="flex-col items-start">
+              <Box className="mb-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl w-full">
+                <Flex align={"center"} gap={"3"} className="mb-2">
+                  {React.createElement(getStatusInfo(event?.status || 0).icon, {
+                    className: "w-5 h-5 text-gray-600",
+                  })}
+                  <Text className="font-semibold text-gray-900">
+                    Current: {getStatusInfo(event?.status || 0).value}
+                  </Text>
+                </Flex>
+                <Text className="text-sm text-gray-600">
+                  {getStatusInfo(event?.status || 0).description}
+                </Text>
+              </Box>
+            </CardFooter>
           </Card>
 
           <Card className="shadow-xs">
@@ -378,19 +409,34 @@ export default function Page() {
               <Grid>
                 <Label className="font-light">Total Tickets</Label>
                 <Text weight={"bold"} className="capitalize">
-                  800
+                  {tickets.reduce((sum, ticket) => sum + ticket.quantity, 0)}
                 </Text>
               </Grid>
               <Grid>
                 <Label className="font-light">Active Tickets</Label>
                 <Text weight={"bold"} className="capitalize">
-                  2
+                  {tickets.filter((ticket) => ticket.is_active).length}
+                </Text>
+              </Grid>
+              <Grid>
+                <Label className="font-light">Sold Ticket</Label>
+                <Text weight={"bold"} className="capitalize">
+                  {tickets.reduce(
+                    (sum, ticket) => sum + ticket.sold_quantity,
+                    0
+                  )}
                 </Text>
               </Grid>
               <Grid>
                 <Label className="font-light">Price Range</Label>
                 <Text weight={"bold"} className="capitalize">
-                  Rp 150.000 - Rp 750.000
+                  {formatRupiah(
+                    Math.min(...tickets.map((t) => parseInt(t.price)))
+                  )}{" "}
+                  -{" "}
+                  {formatRupiah(
+                    Math.max(...tickets.map((t) => parseInt(t.price)))
+                  )}
                 </Text>
               </Grid>
             </CardContent>
@@ -444,5 +490,110 @@ function OfflineInformation({ event }: { event: EventInterface }) {
         </Text>
       </Grid>
     </CardContent>
+  );
+}
+
+function TicketType({
+  ticket,
+  status,
+}: {
+  ticket: TicketTypeInterface;
+  status: number;
+}) {
+  return (
+    <Card className="shadow-xs group">
+      <CardHeader>
+        <Flex align={{ initial: "start", md: "center" }} justify={"between"}>
+          <Grid gap={"3"}>
+            <Flex gap={"3"} direction={{ initial: "column", md: "row" }}>
+              <Flex gap={"3"} align={"center"}>
+                <CardTitle>{ticket.name}</CardTitle>
+                <Badge variant={ticket.is_active ? "green" : "destructive"}>
+                  {ticket.is_active ? "Active" : "Inactive"}
+                </Badge>
+              </Flex>
+              <Heading className="text-indigo-600" size={"5"}>
+                {formatRupiah(parseInt(ticket.price))}
+              </Heading>
+            </Flex>
+          </Grid>
+          <Box>
+            {[PUBLISHED, DRAFT].includes(status) &&
+              ticket.sold_quantity < 1 && (
+                <Link
+                  href={APP_LINK.DASHBOARD.EVENT.TICKET.EDIT.replace(
+                    ":uid",
+                    ticket.event.slug
+                  ).replace(":ticket_uid", ticket.id.toString())}
+                  className={cn(
+                    buttonVariants({
+                      variant: "ghost",
+                    }),
+                    "opacity-100 md:opacity-0 group-hover:opacity-100"
+                  )}
+                >
+                  <Edit />
+                </Link>
+              )}
+          </Box>
+        </Flex>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <CardDescription>{ticket.description}</CardDescription>
+        <Grid columns={{ initial: "2", md: "4" }} gap={"3"}>
+          <Grid>
+            <Label className="font-light">Quantity</Label>
+            <Text weight={"bold"} className="capitalize">
+              {ticket.quantity}
+            </Text>
+          </Grid>
+          <Grid>
+            <Label className="font-light">Min Purchase</Label>
+            <Text weight={"bold"} className="capitalize">
+              {ticket.min_purchase}
+            </Text>
+          </Grid>
+          <Grid>
+            <Label className="font-light">Max Purchase</Label>
+            <Text weight={"bold"} className="capitalize">
+              {ticket.max_purchase}
+            </Text>
+          </Grid>
+          <Grid>
+            <Label className="font-light">Sale</Label>
+            <Text weight={"bold"} className="capitalize">
+              {ticket.sold_quantity}
+            </Text>
+          </Grid>
+        </Grid>
+
+        <Grid columns={{ initial: "1", md: "2" }} gap={"3"}>
+          <Grid>
+            <Label className="font-light">Sale Start</Label>
+            <Text weight={"bold"} className="capitalize">
+              {format(ticket.sale_start, "d MMM y HH:mm")}
+            </Text>
+          </Grid>
+          <Grid>
+            <Label className="font-light">Sale End</Label>
+            <Text weight={"bold"} className="capitalize">
+              {format(ticket.sale_end, "d MMM y HH:mm")}
+            </Text>
+          </Grid>
+        </Grid>
+      </CardContent>
+      <CardFooter>
+        <Grid gap={"1"}>
+          <Label className="font-light">Benefits</Label>
+          <Flex gap={"2"}>
+            {JSON.parse(ticket.benefits).map(
+              (benefit: string, index: number) => (
+                <Badge key={index}>{benefit}</Badge>
+              )
+            )}
+          </Flex>
+        </Grid>
+      </CardFooter>
+    </Card>
   );
 }

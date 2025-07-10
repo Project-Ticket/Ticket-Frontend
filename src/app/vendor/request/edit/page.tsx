@@ -94,7 +94,6 @@ export default function Page() {
     try {
       const response =
         (await handleGetApplicationStatus()) as ApplicationInterface;
-      console.log(response);
 
       if (!response.has_application) {
         router.push(APP_LINK.VENDOR.REGISTER);
@@ -150,8 +149,6 @@ export default function Page() {
   };
 
   const onHandleSubmit = async (data: UpdateOrganizer) => {
-    console.log(data);
-
     setIsLoading(true);
 
     const formData = new FormData();
@@ -182,7 +179,6 @@ export default function Page() {
         formData,
         application?.organizer.uuid as string
       );
-      console.log(response);
 
       if (response.success?.status) {
         form.reset();

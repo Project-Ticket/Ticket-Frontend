@@ -161,7 +161,12 @@ export default function Page() {
 
       if (response.success.status) {
         toastSuccess(response.success.message);
-        router.push(APP_LINK.DASHBOARD.EVENT.DEFAULT);
+        router.push(
+          APP_LINK.DASHBOARD.EVENT.SHOW.replace(
+            ":uid",
+            response.success.data.slug
+          )
+        );
       }
 
       if (response.error) {

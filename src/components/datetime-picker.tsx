@@ -16,9 +16,11 @@ const formatTime = (date: Date) => {
 const DateTimePicker = ({
   value,
   onChange,
+  disabled,
 }: {
   value: Date;
   onChange: (value: Date) => void;
+  disabled?: boolean;
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(value);
   const [time, setTime] = useState<string>(formatTime(value));
@@ -54,7 +56,7 @@ const DateTimePicker = ({
     <div className="flex gap-4">
       <div className="flex-1">
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger asChild disabled={disabled}>
             <Button
               variant="outline"
               className="w-full justify-between h-12 font-normal"
@@ -81,6 +83,7 @@ const DateTimePicker = ({
           className="h-12"
           value={time}
           onChange={handleTimeChange}
+          disabled={disabled}
         />
       </div>
     </div>

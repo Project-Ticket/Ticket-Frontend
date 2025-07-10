@@ -194,7 +194,12 @@ export default function Page() {
 
       if (response.success.status) {
         toastSuccess(response.success.message);
-        router.push(APP_LINK.DASHBOARD.EVENT.DEFAULT);
+        router.push(
+          APP_LINK.DASHBOARD.EVENT.SHOW.replace(
+            ":uid",
+            searchParams.get("uid")!
+          )
+        );
       }
 
       if (response.error) {
@@ -321,6 +326,7 @@ export default function Page() {
                             }}
                             value={form.watch("type")}
                             defaultValue={form.watch("type")}
+                            disabled={isLoading}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select event type" />
@@ -361,6 +367,7 @@ export default function Page() {
                             onValueChange={(e) => field.onChange(Number(e))}
                             value={form.watch("category").toString()}
                             defaultValue={form.watch("category").toString()}
+                            disabled={isLoading}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select category" />
@@ -397,6 +404,7 @@ export default function Page() {
                           <Switch
                             checked={field.value}
                             onCheckedChange={(e) => field.onChange(e)}
+                            disabled={isLoading}
                           />
                         </FormControl>
                       </FormItem>
@@ -417,6 +425,7 @@ export default function Page() {
                             placeholder="Enter event title"
                             {...field}
                             autoComplete={field.name}
+                            disabled={isLoading}
                           />
                         </FormControl>
                         <FormMessage />
@@ -436,6 +445,7 @@ export default function Page() {
                             placeholder="Describe your event in detail..."
                             {...field}
                             autoComplete={field.name}
+                            disabled={isLoading}
                           />
                         </FormControl>
                         <FormMessage />
@@ -507,6 +517,7 @@ export default function Page() {
                                   variant="outline"
                                   className="mt-4"
                                   asChild
+                                  disabled={isLoading}
                                 >
                                   <label
                                     htmlFor="banner-upload"
@@ -537,6 +548,7 @@ export default function Page() {
                             initialTags={field.value || []}
                             onTagsChange={field.onChange}
                             placeholder="Add event tags..."
+                            disabled={isLoading}
                           />
                         </FormControl>
                         <FormMessage />
@@ -554,6 +566,7 @@ export default function Page() {
                           <TipTapEditor
                             setContent={field.onChange}
                             content={field.value}
+                            isLoading={isLoading}
                           />
                         </FormControl>
                         <FormMessage />
@@ -582,6 +595,7 @@ export default function Page() {
                         <DateTimePicker
                           value={field.value || new Date()}
                           onChange={field.onChange}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -599,6 +613,7 @@ export default function Page() {
                         <DateTimePicker
                           value={field.value || new Date()}
                           onChange={field.onChange}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -616,6 +631,7 @@ export default function Page() {
                         <DateTimePicker
                           value={field.value || new Date()}
                           onChange={field.onChange}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -633,6 +649,7 @@ export default function Page() {
                         <DateTimePicker
                           value={field.value || new Date()}
                           onChange={field.onChange}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -650,7 +667,7 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               {["online", "hybrid"].includes(form.watch("type")) && (
-                <EventOnlineForm />
+                <EventOnlineForm isLoading={isLoading} />
               )}
               {["offline", "hybrid"].includes(form.watch("type")) && (
                 <EventOfflineForm
@@ -659,6 +676,7 @@ export default function Page() {
                     const file = e.target.files?.[0];
                     if (file) handleBannerUpload(file);
                   }}
+                  isLoading={isLoading}
                 />
               )}
             </CardContent>
@@ -675,7 +693,7 @@ export default function Page() {
   );
 }
 
-function EventOnlineForm() {
+function EventOnlineForm({ isLoading }: { isLoading?: boolean }) {
   const form = useFormContext<UpdateEventGeneral>();
 
   return (
@@ -692,6 +710,7 @@ function EventOnlineForm() {
                 placeholder="e.g., Zoom, Google Meet, Teams"
                 {...field}
                 autoComplete={field.name}
+                disabled={isLoading}
               />
             </FormControl>
             <FormMessage />
@@ -712,6 +731,7 @@ function EventOnlineForm() {
                 placeholder="https://example.com/meeting"
                 {...field}
                 autoComplete={field.name}
+                disabled={isLoading}
               />
             </FormControl>
             <p className="text-sm text-muted-foreground mt-2">
@@ -728,9 +748,11 @@ function EventOnlineForm() {
 function EventOfflineForm({
   galleryPreviews,
   onGalleryUpload,
+  isLoading,
 }: {
   galleryPreviews: string[];
   onGalleryUpload: (files: FileList) => void;
+  isLoading?: boolean;
 }) {
   const form = useFormContext<UpdateEventGeneral>();
 
@@ -749,6 +771,7 @@ function EventOfflineForm({
                   placeholder="Enter venue name"
                   {...field}
                   autoComplete={field.name}
+                  disabled={isLoading}
                 />
               </FormControl>
               <FormMessage />
@@ -768,6 +791,7 @@ function EventOfflineForm({
                   placeholder="Enter venue address"
                   {...field}
                   autoComplete={field.name}
+                  disabled={isLoading}
                 />
               </FormControl>
               <FormMessage />
@@ -788,6 +812,7 @@ function EventOfflineForm({
                     placeholder="City"
                     {...field}
                     autoComplete={field.name}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -807,6 +832,7 @@ function EventOfflineForm({
                     placeholder="Province"
                     {...field}
                     autoComplete={field.name}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -825,6 +851,7 @@ function EventOfflineForm({
                     placeholder="Latitude"
                     {...field}
                     autoComplete={field.name}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -844,6 +871,7 @@ function EventOfflineForm({
                     placeholder="Longitude"
                     {...field}
                     autoComplete={field.name}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -865,6 +893,7 @@ function EventOfflineForm({
                     {...field}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                     autoComplete={field.name}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -887,6 +916,7 @@ function EventOfflineForm({
                     {...field}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                     autoComplete={field.name}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />

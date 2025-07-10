@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
             )
           ) {
             return NextResponse.redirect(
-              new URL(APP_LINK.VENDOR.REQUESTS, request.url)
+              new URL(APP_LINK.VENDOR.REQUEST, request.url)
             );
           }
 
@@ -83,7 +83,7 @@ export async function middleware(request: NextRequest) {
             )
           ) {
             return NextResponse.redirect(
-              new URL(APP_LINK.VENDOR.REQUESTS, request.url)
+              new URL(APP_LINK.VENDOR.REQUEST, request.url)
             );
           }
         }

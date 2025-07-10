@@ -1,7 +1,7 @@
 "use client";
 
 import { handleGetEvent } from "@/actions/event";
-import { handleCreate } from "@/actions/ticket";
+import { handleCreate, handleGetTicket, handleUpdate } from "@/actions/ticket";
 import AppTitle from "@/components/app-title";
 import DateTimePicker from "@/components/datetime-picker";
 import { Button } from "@/components/ui/button";
@@ -18,8 +18,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { APP_LINK } from "@/constants/link_constant";
-import { EventInterface } from "@/interfaces";
+import { EventInterface, TicketTypeInterface } from "@/interfaces";
 import { toastError, toastSuccess } from "@/lib/toast";
+import { formatRupiah } from "@/lib/utils";
 import {
   ticketTypeSchema,
   TicketTypeSchema,
@@ -39,29 +40,31 @@ import {
   Settings,
   Users,
 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 export default function Page() {
   const router = useRouter();
   const { uid } = useParams();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [event, setEvent] = useState<EventInterface>();
+  const [ticket, setTicket] = useState<TicketTypeInterface>();
 
   const form = useForm<TicketTypeSchema>({
     resolver: zodResolver(ticketTypeSchema),
     defaultValues: {
-      name: "VIP Reguler",
-      description: "VIP Reguler",
-      price: "1000",
+      name: "",
+      description: "",
+      price: "",
       quantity: 1,
       min_purchase: 1,
       max_purchase: 1,
       sale_start: new Date(),
       sale_end: new Date(),
       is_active: true,
-      benefits: [{ value: "VIP Reguler" }],
+      benefits: [],
     },
   });
 
@@ -97,7 +100,7 @@ export default function Page() {
     formData.append("event_id", event?.id.toString() || "");
 
     try {
-      const response = await handleCreate(formData);
+      const response = await handleUpdate(ticket?.id || 0, formData);
 
       if (response.success?.status) {
         router.push(
@@ -125,6 +128,35 @@ export default function Page() {
     }
   };
 
+  const onGetTicket = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await handleGetTicket(
+        parseInt(searchParams.get("ticket_uid") as string)
+      );
+
+      setTicket(response);
+
+      form.setValue("name", response.name);
+      form.setValue("description", response.description);
+      form.setValue("price", parseInt(response.price).toString());
+      form.setValue("quantity", response.quantity);
+      form.setValue("min_purchase", response.min_purchase);
+      form.setValue("max_purchase", response.max_purchase);
+      form.setValue("sale_start", new Date(response.sale_start));
+      form.setValue("sale_end", new Date(response.sale_end));
+      form.setValue("is_active", response.is_active === 1 ? true : false);
+
+      JSON.parse(response.benefits).forEach((benefit: any) => {
+        append({ value: benefit });
+      });
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onGetEvent = async () => {
     setIsLoading(true);
 
@@ -143,10 +175,16 @@ export default function Page() {
     onGetEvent();
   }, []);
 
+  useEffect(() => {
+    if (event) {
+      onGetTicket();
+    }
+  }, [event]);
+
   return (
     <Box>
       <AppTitle
-        title="Create Ticket"
+        title="Edit Ticket"
         description="Configure ticket pricing and availability"
       >
         <Button size={"sm"} variant={"outline"} onClick={() => router.back()}>
@@ -309,9 +347,9 @@ export default function Page() {
                         <FormLabel>Sale Start</FormLabel>
                         <FormControl>
                           <DateTimePicker
+                            disabled={isLoading}
                             value={field.value || new Date()}
                             onChange={field.onChange}
-                            disabled={isLoading}
                           />
                         </FormControl>
                         <FormMessage />
@@ -326,9 +364,9 @@ export default function Page() {
                         <FormLabel>Sale End</FormLabel>
                         <FormControl>
                           <DateTimePicker
+                            disabled={isLoading}
                             value={field.value || new Date()}
                             onChange={field.onChange}
-                            disabled={isLoading}
                           />
                         </FormControl>
                         <FormMessage />

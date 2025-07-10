@@ -24,7 +24,7 @@ export const API_LINK = {
     TYPE: {
       INDEX: "ticket-type",
       STORE: "ticket-type/store",
-      SHOW: "ticket-type/:id",
+      SHOW: "ticket-type/:id/show",
       UPDATE: "ticket-type/:id/update",
       DELETE: "ticket-type/:id/delete",
       UPDATE_STATUS: "ticket-type/:id/update-status",

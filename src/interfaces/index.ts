@@ -139,6 +139,7 @@ export interface EventInterface extends CommonInterface {
   organizer: OrganizerInterface;
   category: CategoryInterface;
   tags?: TagInterface[];
+  total_order?: number;
 }
 
 export interface PaymentMethodInterface extends CommonInterface {
@@ -153,4 +154,21 @@ export interface PaymentMethodInterface extends CommonInterface {
   is_active: boolean;
   sort_order: number;
   settings?: any;
+}
+
+export interface TicketTypeInterface extends CommonInterface {
+  name: string;
+  description: string;
+  price: string;
+  quantity: number;
+  sold_quantity: number;
+  min_purchase: number;
+  max_purchase: number;
+  sale_start: string;
+  sale_end: string;
+  is_active: number;
+  sort_order: number;
+  benefits: string;
+  event: EventInterface;
+  is_sale_active: boolean;
 }

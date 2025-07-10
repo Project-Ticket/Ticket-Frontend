@@ -51,7 +51,7 @@ export const handleCreate = async (formData: FormData) => {
       body: formData,
     });
 
-    return showMessageSuccess(response.message);
+    return showMessageSuccess(response.message, response.data);
   } catch (error: any) {
     return showMessageError(error);
   }
@@ -71,6 +71,24 @@ export const handleUpdate = async (formData: FormData, slug: string) => {
 
     return showMessageSuccess(response.message);
   } catch (error) {
+    return showMessageError(error);
+  }
+};
+
+export const handleUpdateStatus = async (formData: FormData, slug: string) => {
+  formData.append("_method", "PATCH");
+
+  try {
+    const response = await serverFetcher(
+      API_LINK.EVENT.UPDATE_STATUS.replace(":slug", slug),
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    return showMessageSuccess(response.message);
+  } catch (error: any) {
     return showMessageError(error);
   }
 };
